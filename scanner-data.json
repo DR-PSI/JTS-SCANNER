@@ -1,0 +1,9 @@
+{
+  "updated": "01/07/2026 09:00",
+  "stocks": [
+    {"symbol": "AOT",   "position": "BUY",  "price": 60.00, "date": "12/2025", "new": false},
+    {"symbol": "CPALL", "position": "BUY",  "price": 46.50, "date": "02/2026", "new": true},
+    {"symbol": "PTT",   "position": "SELL", "price": 35.50, "date": "01/2025", "new": false},
+    {"symbol": "MINT",  "position": "BUY",  "price": 23.90, "date": "06/2026", "new": true}
+  ]
+}

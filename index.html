@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JTS Stock Scanner</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0d1117; color: #e6edf3; min-height: 100vh; }
+
+  .header { background: #161b22; border-bottom: 1px solid #30363d; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .header h1 { font-size: 20px; font-weight: 600; color: #58a6ff; }
+  .header .meta { font-size: 12px; color: #8b949e; }
+
+  .stats { display: flex; gap: 16px; padding: 20px 24px; }
+  .stat-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px 24px; flex: 1; }
+  .stat-card .label { font-size: 12px; color: #8b949e; margin-bottom: 8px; }
+  .stat-card .value { font-size: 28px; font-weight: 700; }
+  .stat-card.buy .value { color: #3fb950; }
+  .stat-card.sell .value { color: #f85149; }
+  .stat-card.total .value { color: #58a6ff; }
+
+  .filters { padding: 0 24px 16px; display: flex; gap: 8px; }
+  .btn { padding: 6px 16px; border-radius: 6px; border: 1px solid #30363d; background: #21262d; color: #e6edf3; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+  .btn:hover { border-color: #58a6ff; color: #58a6ff; }
+  .btn.active { background: #1f6feb; border-color: #1f6feb; color: white; }
+  .btn.buy-btn.active { background: #238636; border-color: #238636; }
+  .btn.sell-btn.active { background: #da3633; border-color: #da3633; }
+
+  .table-wrap { padding: 0 24px 24px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead tr { background: #161b22; }
+  th { padding: 10px 16px; text-align: left; font-size: 12px; color: #8b949e; font-weight: 500; border-bottom: 1px solid #30363d; white-space: nowrap; }
+  td { padding: 10px 16px; border-bottom: 1px solid #21262d; vertical-align: middle; }
+  tr:hover td { background: #161b22; }
+
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .badge.buy  { background: #0d4a1e; color: #3fb950; border: 1px solid #238636; }
+  .badge.sell { background: #4a0d0d; color: #f85149; border: 1px solid #da3633; }
+
+  .symbol { font-weight: 600; color: #58a6ff; }
+  .price  { font-weight: 500; }
+  .date   { color: #8b949e; font-size: 13px; }
+
+  .line-btn { padding: 4px 10px; border-radius: 6px; border: 1px solid #238636; background: #0d4a1e; color: #3fb950; cursor: pointer; font-size: 12px; transition: all 0.2s; white-space: nowrap; }
+  .line-btn:hover { background: #238636; color: white; }
+  .line-btn.sending { opacity: 0.5; cursor: not-allowed; }
+  .line-btn.sent { border-color: #58a6ff; background: #1f3a5c; color: #58a6ff; }
+
+  .loading { text-align: center; padding: 60px; color: #8b949e; }
+  .refresh-btn { background: #21262d; border: 1px solid #30363d; color: #e6edf3; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+  .refresh-btn:hover { border-color: #58a6ff; }
+
+  /* Toast notification */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: #238636; color: white; padding: 12px 20px; border-radius: 8px; font-size: 14px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999; }
+  .toast.show { opacity: 1; }
+  .toast.error { background: #da3633; }
+
+  @media (max-width: 600px) {
+    .stats { flex-direction: column; }
+    .header h1 { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>🤖 JTS Stock Scanner</h1>
+    <div class="meta">Monthly MACD Signal — SET Thailand</div>
+  </div>
+  <div style="display:flex; align-items:center; gap:12px;">
+    <span class="meta" id="last-update">กำลังโหลด...</span>
+    <button class="refresh-btn" onclick="loadData()">🔄 Refresh</button>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat-card total">
+    <div class="label">หุ้นทั้งหมด</div>
+    <div class="value" id="total-count">-</div>
+  </div>
+  <div class="stat-card buy">
+    <div class="label">⚠️ Ready to Buy</div>
+    <div class="value" id="buy-count">-</div>
+  </div>
+  <div class="stat-card sell">
+    <div class="label">🔴 Ready to Sell</div>
+    <div class="value" id="sell-count">-</div>
+  </div>
+</div>
+
+<div class="filters">
+  <button class="btn active" onclick="filterData('ALL', this)">ทั้งหมด</button>
+  <button class="btn buy-btn"  onclick="filterData('BUY',  this)">Ready to Buy</button>
+  <button class="btn sell-btn" onclick="filterData('SELL', this)">Ready to Sell</button>
+</div>
+
+<div class="table-wrap">
+  <div class="loading" id="loading">⏳ กำลังโหลดข้อมูล...</div>
+  <table id="main-table" style="display:none">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Symbol</th>
+        <th>สัญญาณ</th>
+        <th>ราคา (บาท)</th>
+        <th>สัญญาณล่าสุด</th>
+        <th>ใหม่</th>
+        <th>ส่ง LINE</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const N8N_WEBHOOK = 'https://n8n.jupetor-cmms.com/webhook/send-line';
+let allData = [];
+let currentFilter = 'ALL';
+
+async function loadData() {
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('main-table').style.display = 'none';
+  try {
+    const res  = await fetch('scanner-data.json?t=' + Date.now());
+    const data = await res.json();
+    allData = data.stocks || [];
+    document.getElementById('last-update').textContent = 'อัปเดต: ' + (data.updated || '-');
+    updateStats();
+    renderTable(currentFilter);
+  } catch(e) {
+    document.getElementById('loading').innerHTML = '❌ ไม่พบข้อมูล — รอ GitHub Actions รันครับ';
+  }
+}
+
+function updateStats() {
+  const buy  = allData.filter(r => r.position === 'BUY').length;
+  const sell = allData.filter(r => r.position === 'SELL').length;
+  document.getElementById('total-count').textContent = allData.length;
+  document.getElementById('buy-count').textContent   = buy;
+  document.getElementById('sell-count').textContent  = sell;
+}
+
+function filterData(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable(filter);
+}
+
+function renderTable(filter) {
+  let rows = allData.filter(r => r.position !== 'NONE');
+  if (filter === 'BUY')  rows = rows.filter(r => r.position === 'BUY');
+  if (filter === 'SELL') rows = rows.filter(r => r.position === 'SELL');
+
+  rows.sort((a, b) => {
+    if (a.new && !b.new) return -1;
+    if (!a.new && b.new) return 1;
+    return b.date.localeCompare(a.date);
+  });
+
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = rows.map((r, i) => `
+    <tr>
+      <td class="date">${i+1}</td>
+      <td class="symbol">${r.symbol}</td>
+      <td><span class="badge ${r.position.toLowerCase()}">${r.position === 'BUY' ? '⚠️ Ready to Buy' : '🔴 Ready to Sell'}</span></td>
+      <td class="price">${r.price.toLocaleString('th-TH', {minimumFractionDigits:2})}</td>
+      <td class="date">${r.date}</td>
+      <td>${r.new ? '🆕 ใหม่!' : ''}</td>
+      <td>
+        <button class="line-btn" id="btn-${r.symbol}" onclick="sendLine('${r.symbol}', '${r.position}', ${r.price}, '${r.date}', this)">
+          📲 ส่ง LINE
+        </button>
+      </td>
+    </tr>
+  `).join('');
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('main-table').style.display = 'table';
+}
+
+async function sendLine(symbol, signal, price, date, btn) {
+  btn.classList.add('sending');
+  btn.textContent = '⏳ กำลังส่ง...';
+  btn.disabled = true;
+
+  const emoji = signal === 'BUY' ? '⚠️' : '🔴';
+  const label = signal === 'BUY' ? 'Ready to Buy' : 'Ready to Sell';
+  const now   = new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
+
+  const payload = {
+    symbol,
+    signal,
+    price,
+    message: `${emoji} ${label} — ${symbol}\nราคา: ${price} บาท\nTimeframe: Monthly\nสัญญาณ: ${date}\nเวลา: ${now}`
+  };
+
+  try {
+    const res = await fetch(N8N_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      btn.classList.remove('sending');
+      btn.classList.add('sent');
+      btn.textContent = '✅ ส่งแล้ว';
+      showToast(`✅ ส่ง ${symbol} ไป LINE แล้ว!`);
+    } else {
+      throw new Error('HTTP ' + res.status);
+    }
+  } catch(e) {
+    btn.classList.remove('sending');
+    btn.textContent = '📲 ส่ง LINE';
+    btn.disabled = false;
+    showToast('❌ ส่งไม่ได้ ลองใหม่ครับ', true);
+  }
+}
+
+function showToast(msg, isError=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+loadData();
+setInterval(loadData, 60000);
+</script>
+</body>
+</html>
