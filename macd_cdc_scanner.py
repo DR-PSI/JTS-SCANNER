@@ -148,10 +148,10 @@ def send_webhook(symbol, signal, price, last_date):
     payload = {
         "symbol":  name,
         "signal":  signal,
-        "price":   round(float(price), 2),
+        "price":   round(price, 2),
         "message": (
             f"{emoji} {signal} — {name}\n"
-            f"ราคา: {round(float(price), 2)} บาท\n"
+            f"ราคา: {round(price, 2)} บาท\n"
             f"Timeframe: Monthly\n"
             f"สัญญาณล่าสุด: {last_date.strftime('%m/%Y') if last_date else '-'}\n"
             f"เวลา: {datetime.now().strftime('%d/%m/%Y %H:%M')}"
@@ -184,7 +184,7 @@ def main():
                 continue
 
             position, last_date, new_signal = scan_history(df)
-            price = df["Close"].iloc[-1]
+            price = float(df["Close"].iloc[-1].squeeze()) if hasattr(df["Close"].iloc[-1], 'squeeze') else float(df["Close"].iloc[-1])
 
             icon = "🟢" if position == "BUY" else "🔴" if position == "SELL" else "⬜"
             new  = " ← ใหม่!" if new_signal else ""
@@ -196,7 +196,7 @@ def main():
                 "symbol":   symbol.replace(".BK", ""),
                 "position": position,
                 "date":     date_str,
-                "price":    round(float(price), 2),
+                "price":    round(price, 2),
                 "new":      bool(new_signal)
             })
 
