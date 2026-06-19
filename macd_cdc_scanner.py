@@ -80,7 +80,7 @@ def send_webhook(symbol, signal, price, last_date):
         "signal": signal,
         "price":  round(price, 2),
         "message": (
-            f"{emoji} {signal} — {name}\n"
+            f"{emoji} {'Ready to Buy' if signal == 'BUY' else 'Ready to Sell'} — {name}\n"
             f"ราคา: {round(price, 2)} บาท\n"
             f"Timeframe: Monthly\n"
             f"สัญญาณ: {last_date.strftime('%m/%Y') if last_date else '-'}\n"
