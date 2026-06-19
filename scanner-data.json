@@ -1,9 +1,1517 @@
 {
-  "updated": "01/07/2026 09:00",
+  "updated": "19/06/2026 18:35",
   "stocks": [
-    {"symbol": "AOT",   "position": "BUY",  "price": 60.00, "date": "12/2025", "new": false},
-    {"symbol": "CPALL", "position": "BUY",  "price": 46.50, "date": "02/2026", "new": true},
-    {"symbol": "PTT",   "position": "SELL", "price": 35.50, "date": "01/2025", "new": false},
-    {"symbol": "MINT",  "position": "BUY",  "price": 23.90, "date": "06/2026", "new": true}
+    {
+      "symbol": "PTT",
+      "position": "SELL",
+      "date": "01/2025",
+      "price": 35.25,
+      "new": false
+    },
+    {
+      "symbol": "PTTEP",
+      "position": "BUY",
+      "date": "01/2026",
+      "price": 134.0,
+      "new": false
+    },
+    {
+      "symbol": "PTTGC",
+      "position": "BUY",
+      "date": "07/2025",
+      "price": 33.5,
+      "new": false
+    },
+    {
+      "symbol": "TOP",
+      "position": "BUY",
+      "date": "10/2025",
+      "price": 45.0,
+      "new": false
+    },
+    {
+      "symbol": "IRPC",
+      "position": "BUY",
+      "date": "08/2025",
+      "price": 1.73,
+      "new": false
+    },
+    {
+      "symbol": "BCP",
+      "position": "BUY",
+      "date": "03/2026",
+      "price": 33.25,
+      "new": false
+    },
+    {
+      "symbol": "GPSC",
+      "position": "BUY",
+      "date": "08/2025",
+      "price": 43.5,
+      "new": false
+    },
+    {
+      "symbol": "EGCO",
+      "position": "BUY",
+      "date": "09/2024",
+      "price": 120.0,
+      "new": false
+    },
+    {
+      "symbol": "RATCH",
+      "position": "BUY",
+      "date": "09/2024",
+      "price": 30.75,
+      "new": false
+    },
+    {
+      "symbol": "BGRIM",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 17.2,
+      "new": false
+    },
+    {
+      "symbol": "BANPU",
+      "position": "BUY",
+      "date": "10/2024",
+      "price": 5.4,
+      "new": false
+    },
+    {
+      "symbol": "CK",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 20.2,
+      "new": false
+    },
+    {
+      "symbol": "SCB",
+      "position": "BUY",
+      "date": "05/2023",
+      "price": 141.0,
+      "new": false
+    },
+    {
+      "symbol": "KBANK",
+      "position": "BUY",
+      "date": "05/2024",
+      "price": 207.0,
+      "new": false
+    },
+    {
+      "symbol": "BBL",
+      "position": "SELL",
+      "date": "04/2025",
+      "price": 175.0,
+      "new": false
+    },
+    {
+      "symbol": "KTB",
+      "position": "SELL",
+      "date": "12/2023",
+      "price": 36.0,
+      "new": false
+    },
+    {
+      "symbol": "BAY",
+      "position": "BUY",
+      "date": "08/2025",
+      "price": 38.5,
+      "new": false
+    },
+    {
+      "symbol": "TTB",
+      "position": "BUY",
+      "date": "12/2020",
+      "price": 2.38,
+      "new": false
+    },
+    {
+      "symbol": "TISCO",
+      "position": "SELL",
+      "date": "02/2024",
+      "price": 116.5,
+      "new": false
+    },
+    {
+      "symbol": "KKP",
+      "position": "BUY",
+      "date": "10/2024",
+      "price": 92.75,
+      "new": false
+    },
+    {
+      "symbol": "TCAP",
+      "position": "SELL",
+      "date": "04/2024",
+      "price": 65.25,
+      "new": false
+    },
+    {
+      "symbol": "CPALL",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 46.5,
+      "new": false
+    },
+    {
+      "symbol": "CRC",
+      "position": "BUY",
+      "date": "05/2026",
+      "price": 23.2,
+      "new": false
+    },
+    {
+      "symbol": "BJC",
+      "position": "BUY",
+      "date": "11/2024",
+      "price": 14.3,
+      "new": false
+    },
+    {
+      "symbol": "HMPRO",
+      "position": "BUY",
+      "date": "01/2026",
+      "price": 6.15,
+      "new": false
+    },
+    {
+      "symbol": "COM7",
+      "position": "BUY",
+      "date": "09/2024",
+      "price": 28.25,
+      "new": false
+    },
+    {
+      "symbol": "DOHOME",
+      "position": "BUY",
+      "date": "03/2026",
+      "price": 3.34,
+      "new": false
+    },
+    {
+      "symbol": "GLOBAL",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 6.25,
+      "new": false
+    },
+    {
+      "symbol": "CPF",
+      "position": "SELL",
+      "date": "10/2025",
+      "price": 19.2,
+      "new": false
+    },
+    {
+      "symbol": "TU",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 11.3,
+      "new": false
+    },
+    {
+      "symbol": "BTG",
+      "position": "BUY",
+      "date": "12/2025",
+      "price": 20.0,
+      "new": false
+    },
+    {
+      "symbol": "GFPT",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 8.6,
+      "new": false
+    },
+    {
+      "symbol": "OSP",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 16.0,
+      "new": false
+    },
+    {
+      "symbol": "CBG",
+      "position": "BUY",
+      "date": "09/2024",
+      "price": 40.75,
+      "new": false
+    },
+    {
+      "symbol": "ICHI",
+      "position": "SELL",
+      "date": "08/2024",
+      "price": 13.3,
+      "new": false
+    },
+    {
+      "symbol": "SAPPE",
+      "position": "SELL",
+      "date": "08/2024",
+      "price": 30.0,
+      "new": false
+    },
+    {
+      "symbol": "MALEE",
+      "position": "SELL",
+      "date": "11/2024",
+      "price": 4.04,
+      "new": false
+    },
+    {
+      "symbol": "TKN",
+      "position": "SELL",
+      "date": "12/2023",
+      "price": 4.04,
+      "new": false
+    },
+    {
+      "symbol": "NRF",
+      "position": "BUY",
+      "date": "08/2025",
+      "price": 0.24,
+      "new": false
+    },
+    {
+      "symbol": "LH",
+      "position": "BUY",
+      "date": "12/2025",
+      "price": 3.68,
+      "new": false
+    },
+    {
+      "symbol": "AP",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 7.25,
+      "new": false
+    },
+    {
+      "symbol": "QH",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 1.34,
+      "new": false
+    },
+    {
+      "symbol": "SIRI",
+      "position": "SELL",
+      "date": "11/2023",
+      "price": 1.44,
+      "new": false
+    },
+    {
+      "symbol": "ORI",
+      "position": "BUY",
+      "date": "10/2025",
+      "price": 1.68,
+      "new": false
+    },
+    {
+      "symbol": "SPALI",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 15.7,
+      "new": false
+    },
+    {
+      "symbol": "PSH",
+      "position": "BUY",
+      "date": "03/2026",
+      "price": 3.4,
+      "new": false
+    },
+    {
+      "symbol": "SC",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 1.8,
+      "new": false
+    },
+    {
+      "symbol": "NOBLE",
+      "position": "BUY",
+      "date": "10/2025",
+      "price": 1.77,
+      "new": false
+    },
+    {
+      "symbol": "PLUS",
+      "position": "SELL",
+      "date": "07/2024",
+      "price": 1.18,
+      "new": false
+    },
+    {
+      "symbol": "ANAN",
+      "position": "BUY",
+      "date": "02/2024",
+      "price": 0.32,
+      "new": false
+    },
+    {
+      "symbol": "BH",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 186.5,
+      "new": false
+    },
+    {
+      "symbol": "BCH",
+      "position": "SELL",
+      "date": "04/2024",
+      "price": 9.4,
+      "new": false
+    },
+    {
+      "symbol": "CHG",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 1.54,
+      "new": false
+    },
+    {
+      "symbol": "NTV",
+      "position": "BUY",
+      "date": "07/2021",
+      "price": 18.7,
+      "new": false
+    },
+    {
+      "symbol": "BDMS",
+      "position": "SELL",
+      "date": "06/2023",
+      "price": 18.3,
+      "new": false
+    },
+    {
+      "symbol": "PR9",
+      "position": "SELL",
+      "date": "08/2025",
+      "price": 17.0,
+      "new": false
+    },
+    {
+      "symbol": "RJH",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 13.6,
+      "new": false
+    },
+    {
+      "symbol": "RAM",
+      "position": "BUY",
+      "date": "10/2025",
+      "price": 17.9,
+      "new": false
+    },
+    {
+      "symbol": "SKR",
+      "position": "SELL",
+      "date": "07/2022",
+      "price": 7.7,
+      "new": false
+    },
+    {
+      "symbol": "ADVANC",
+      "position": "SELL",
+      "date": "02/2024",
+      "price": 357.0,
+      "new": false
+    },
+    {
+      "symbol": "TRUE",
+      "position": "SELL",
+      "date": "07/2025",
+      "price": 13.7,
+      "new": false
+    },
+    {
+      "symbol": "JAS",
+      "position": "SELL",
+      "date": "01/2025",
+      "price": 1.17,
+      "new": false
+    },
+    {
+      "symbol": "THCOM",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 11.3,
+      "new": false
+    },
+    {
+      "symbol": "DIF",
+      "position": "BUY",
+      "date": "09/2024",
+      "price": 10.1,
+      "new": false
+    },
+    {
+      "symbol": "JASIF",
+      "position": "BUY",
+      "date": "03/2025",
+      "price": 6.55,
+      "new": false
+    },
+    {
+      "symbol": "INSET",
+      "position": "BUY",
+      "date": "01/2026",
+      "price": 3.7,
+      "new": false
+    },
+    {
+      "symbol": "AOT",
+      "position": "BUY",
+      "date": "12/2025",
+      "price": 59.75,
+      "new": false
+    },
+    {
+      "symbol": "MINT",
+      "position": "BUY",
+      "date": "06/2026",
+      "price": 24.5,
+      "new": true
+    },
+    {
+      "symbol": "ERW",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 3.0,
+      "new": false
+    },
+    {
+      "symbol": "CENTEL",
+      "position": "BUY",
+      "date": "10/2025",
+      "price": 36.25,
+      "new": false
+    },
+    {
+      "symbol": "SHR",
+      "position": "BUY",
+      "date": "11/2025",
+      "price": 1.69,
+      "new": false
+    },
+    {
+      "symbol": "AWC",
+      "position": "BUY",
+      "date": "01/2026",
+      "price": 2.62,
+      "new": false
+    },
+    {
+      "symbol": "MAJOR",
+      "position": "BUY",
+      "date": "05/2026",
+      "price": 6.8,
+      "new": false
+    },
+    {
+      "symbol": "RS",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 0.14,
+      "new": false
+    },
+    {
+      "symbol": "VGI",
+      "position": "BUY",
+      "date": "07/2024",
+      "price": 0.93,
+      "new": false
+    },
+    {
+      "symbol": "SCC",
+      "position": "BUY",
+      "date": "07/2025",
+      "price": 248.0,
+      "new": false
+    },
+    {
+      "symbol": "SCCC",
+      "position": "SELL",
+      "date": "07/2025",
+      "price": 143.0,
+      "new": false
+    },
+    {
+      "symbol": "TBSP",
+      "position": "BUY",
+      "date": "06/2025",
+      "price": 0.87,
+      "new": false
+    },
+    {
+      "symbol": "TPIPL",
+      "position": "BUY",
+      "date": "04/2026",
+      "price": 0.81,
+      "new": false
+    },
+    {
+      "symbol": "IVL",
+      "position": "BUY",
+      "date": "10/2024",
+      "price": 22.3,
+      "new": false
+    },
+    {
+      "symbol": "STA",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 17.7,
+      "new": false
+    },
+    {
+      "symbol": "DELTA",
+      "position": "SELL",
+      "date": "03/2025",
+      "price": 334.0,
+      "new": false
+    },
+    {
+      "symbol": "KCE",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 38.75,
+      "new": false
+    },
+    {
+      "symbol": "HANA",
+      "position": "BUY",
+      "date": "10/2025",
+      "price": 37.5,
+      "new": false
+    },
+    {
+      "symbol": "SVI",
+      "position": "BUY",
+      "date": "12/2025",
+      "price": 5.5,
+      "new": false
+    },
+    {
+      "symbol": "BE8",
+      "position": "BUY",
+      "date": "10/2025",
+      "price": 5.75,
+      "new": false
+    },
+    {
+      "symbol": "MFEC",
+      "position": "BUY",
+      "date": "01/2026",
+      "price": 5.8,
+      "new": false
+    },
+    {
+      "symbol": "WORK",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 3.48,
+      "new": false
+    },
+    {
+      "symbol": "SECURE",
+      "position": "BUY",
+      "date": "02/2024",
+      "price": 12.3,
+      "new": false
+    },
+    {
+      "symbol": "SAWAD",
+      "position": "BUY",
+      "date": "11/2025",
+      "price": 21.9,
+      "new": false
+    },
+    {
+      "symbol": "MTC",
+      "position": "SELL",
+      "date": "03/2025",
+      "price": 29.5,
+      "new": false
+    },
+    {
+      "symbol": "AEONTS",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 96.25,
+      "new": false
+    },
+    {
+      "symbol": "KTC",
+      "position": "BUY",
+      "date": "05/2026",
+      "price": 32.0,
+      "new": false
+    },
+    {
+      "symbol": "TQM",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 13.7,
+      "new": false
+    },
+    {
+      "symbol": "SINGER",
+      "position": "BUY",
+      "date": "07/2024",
+      "price": 9.15,
+      "new": false
+    },
+    {
+      "symbol": "JMART",
+      "position": "BUY",
+      "date": "09/2024",
+      "price": 9.25,
+      "new": false
+    },
+    {
+      "symbol": "JMT",
+      "position": "BUY",
+      "date": "12/2024",
+      "price": 11.1,
+      "new": false
+    },
+    {
+      "symbol": "WHA",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 5.0,
+      "new": false
+    },
+    {
+      "symbol": "AMATA",
+      "position": "BUY",
+      "date": "03/2026",
+      "price": 26.5,
+      "new": false
+    },
+    {
+      "symbol": "ROJNA",
+      "position": "BUY",
+      "date": "03/2026",
+      "price": 5.6,
+      "new": false
+    },
+    {
+      "symbol": "BEM",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 5.75,
+      "new": false
+    },
+    {
+      "symbol": "BTS",
+      "position": "BUY",
+      "date": "12/2024",
+      "price": 2.12,
+      "new": false
+    },
+    {
+      "symbol": "WHART",
+      "position": "SELL",
+      "date": "07/2025",
+      "price": 10.9,
+      "new": false
+    },
+    {
+      "symbol": "FTREIT",
+      "position": "BUY",
+      "date": "08/2024",
+      "price": 11.8,
+      "new": false
+    },
+    {
+      "symbol": "CPN",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 65.0,
+      "new": false
+    },
+    {
+      "symbol": "BEAUTY",
+      "position": "BUY",
+      "date": "01/2024",
+      "price": 0.38,
+      "new": false
+    },
+    {
+      "symbol": "TNP",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 2.74,
+      "new": false
+    },
+    {
+      "symbol": "NCH",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 0.41,
+      "new": false
+    },
+    {
+      "symbol": "PYLON",
+      "position": "BUY",
+      "date": "10/2024",
+      "price": 3.34,
+      "new": false
+    },
+    {
+      "symbol": "ITD",
+      "position": "BUY",
+      "date": "07/2025",
+      "price": 0.37,
+      "new": false
+    },
+    {
+      "symbol": "SYNEX",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 9.15,
+      "new": false
+    },
+    {
+      "symbol": "SVOA",
+      "position": "BUY",
+      "date": "08/2025",
+      "price": 1.84,
+      "new": false
+    },
+    {
+      "symbol": "SIS",
+      "position": "BUY",
+      "date": "03/2026",
+      "price": 21.6,
+      "new": false
+    },
+    {
+      "symbol": "INET",
+      "position": "BUY",
+      "date": "06/2026",
+      "price": 4.06,
+      "new": true
+    },
+    {
+      "symbol": "ITEL",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 1.36,
+      "new": false
+    },
+    {
+      "symbol": "FORTH",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 15.0,
+      "new": false
+    },
+    {
+      "symbol": "FPI",
+      "position": "BUY",
+      "date": "11/2025",
+      "price": 1.5,
+      "new": false
+    },
+    {
+      "symbol": "AQUA",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 0.11,
+      "new": false
+    },
+    {
+      "symbol": "AIT",
+      "position": "BUY",
+      "date": "10/2024",
+      "price": 4.7,
+      "new": false
+    },
+    {
+      "symbol": "EKH",
+      "position": "SELL",
+      "date": "03/2023",
+      "price": 4.96,
+      "new": false
+    },
+    {
+      "symbol": "LPH",
+      "position": "BUY",
+      "date": "12/2025",
+      "price": 3.56,
+      "new": false
+    },
+    {
+      "symbol": "VIBHA",
+      "position": "BUY",
+      "date": "04/2026",
+      "price": 1.36,
+      "new": false
+    },
+    {
+      "symbol": "WPH",
+      "position": "SELL",
+      "date": "12/2024",
+      "price": 5.7,
+      "new": false
+    },
+    {
+      "symbol": "NEW",
+      "position": "SELL",
+      "date": "06/2026",
+      "price": 82.5,
+      "new": true
+    },
+    {
+      "symbol": "PRINC",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 1.71,
+      "new": false
+    },
+    {
+      "symbol": "KAMART",
+      "position": "SELL",
+      "date": "09/2024",
+      "price": 7.6,
+      "new": false
+    },
+    {
+      "symbol": "GEL",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 0.03,
+      "new": false
+    },
+    {
+      "symbol": "EVER",
+      "position": "BUY",
+      "date": "10/2025",
+      "price": 0.11,
+      "new": false
+    },
+    {
+      "symbol": "YUASA",
+      "position": "BUY",
+      "date": "08/2024",
+      "price": 14.2,
+      "new": false
+    },
+    {
+      "symbol": "MILL",
+      "position": "BUY",
+      "date": "12/2024",
+      "price": 0.02,
+      "new": false
+    },
+    {
+      "symbol": "CPL",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 0.69,
+      "new": false
+    },
+    {
+      "symbol": "CFRESH",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 1.06,
+      "new": false
+    },
+    {
+      "symbol": "ASIAN",
+      "position": "BUY",
+      "date": "05/2024",
+      "price": 7.05,
+      "new": false
+    },
+    {
+      "symbol": "SORKON",
+      "position": "BUY",
+      "date": "04/2026",
+      "price": 3.52,
+      "new": false
+    },
+    {
+      "symbol": "RICHY",
+      "position": "BUY",
+      "date": "06/2026",
+      "price": 0.15,
+      "new": true
+    },
+    {
+      "symbol": "LDC",
+      "position": "BUY",
+      "date": "09/2024",
+      "price": 0.25,
+      "new": false
+    },
+    {
+      "symbol": "MC",
+      "position": "SELL",
+      "date": "05/2024",
+      "price": 11.2,
+      "new": false
+    },
+    {
+      "symbol": "FANCY",
+      "position": "BUY",
+      "date": "09/2024",
+      "price": 0.31,
+      "new": false
+    },
+    {
+      "symbol": "MONO",
+      "position": "SELL",
+      "date": "10/2025",
+      "price": 0.87,
+      "new": false
+    },
+    {
+      "symbol": "SISB",
+      "position": "SELL",
+      "date": "05/2024",
+      "price": 9.75,
+      "new": false
+    },
+    {
+      "symbol": "MASTER",
+      "position": "BUY",
+      "date": "04/2026",
+      "price": 8.65,
+      "new": false
+    },
+    {
+      "symbol": "TIGER",
+      "position": "BUY",
+      "date": "10/2024",
+      "price": 0.7,
+      "new": false
+    },
+    {
+      "symbol": "CITY",
+      "position": "BUY",
+      "date": "10/2025",
+      "price": 1.18,
+      "new": false
+    },
+    {
+      "symbol": "BCPG",
+      "position": "BUY",
+      "date": "07/2023",
+      "price": 7.35,
+      "new": false
+    },
+    {
+      "symbol": "SUPER",
+      "position": "BUY",
+      "date": "10/2024",
+      "price": 0.13,
+      "new": false
+    },
+    {
+      "symbol": "SOLAR",
+      "position": "BUY",
+      "date": "08/2025",
+      "price": 0.24,
+      "new": false
+    },
+    {
+      "symbol": "TPCH",
+      "position": "BUY",
+      "date": "06/2026",
+      "price": 1.42,
+      "new": true
+    },
+    {
+      "symbol": "TSE",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 0.74,
+      "new": false
+    },
+    {
+      "symbol": "SPCG",
+      "position": "BUY",
+      "date": "05/2025",
+      "price": 8.9,
+      "new": false
+    },
+    {
+      "symbol": "ACE",
+      "position": "BUY",
+      "date": "06/2024",
+      "price": 1.29,
+      "new": false
+    },
+    {
+      "symbol": "GUNKUL",
+      "position": "BUY",
+      "date": "08/2025",
+      "price": 3.94,
+      "new": false
+    },
+    {
+      "symbol": "PPS",
+      "position": "BUY",
+      "date": "07/2025",
+      "price": 0.19,
+      "new": false
+    },
+    {
+      "symbol": "SKE",
+      "position": "BUY",
+      "date": "07/2025",
+      "price": 0.18,
+      "new": false
+    },
+    {
+      "symbol": "MEGA",
+      "position": "BUY",
+      "date": "11/2025",
+      "price": 35.0,
+      "new": false
+    },
+    {
+      "symbol": "M",
+      "position": "BUY",
+      "date": "08/2025",
+      "price": 21.2,
+      "new": false
+    },
+    {
+      "symbol": "NPK",
+      "position": "BUY",
+      "date": "07/2025",
+      "price": 12.8,
+      "new": false
+    },
+    {
+      "symbol": "OCC",
+      "position": "BUY",
+      "date": "06/2026",
+      "price": 9.8,
+      "new": true
+    },
+    {
+      "symbol": "PAP",
+      "position": "BUY",
+      "date": "05/2025",
+      "price": 2.5,
+      "new": false
+    },
+    {
+      "symbol": "PPM",
+      "position": "BUY",
+      "date": "05/2026",
+      "price": 1.74,
+      "new": false
+    },
+    {
+      "symbol": "PCSGH",
+      "position": "BUY",
+      "date": "03/2026",
+      "price": 2.98,
+      "new": false
+    },
+    {
+      "symbol": "SAT",
+      "position": "BUY",
+      "date": "05/2025",
+      "price": 15.8,
+      "new": false
+    },
+    {
+      "symbol": "STANLY",
+      "position": "SELL",
+      "date": "05/2025",
+      "price": 246.0,
+      "new": false
+    },
+    {
+      "symbol": "SMIT",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 3.46,
+      "new": false
+    },
+    {
+      "symbol": "SUC",
+      "position": "SELL",
+      "date": "04/2025",
+      "price": 27.25,
+      "new": false
+    },
+    {
+      "symbol": "SWC",
+      "position": "BUY",
+      "date": "06/2025",
+      "price": 4.6,
+      "new": false
+    },
+    {
+      "symbol": "TCC",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 0.34,
+      "new": false
+    },
+    {
+      "symbol": "TEAMG",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 3.0,
+      "new": false
+    },
+    {
+      "symbol": "THREL",
+      "position": "BUY",
+      "date": "04/2025",
+      "price": 0.99,
+      "new": false
+    },
+    {
+      "symbol": "TKS",
+      "position": "BUY",
+      "date": "08/2025",
+      "price": 7.3,
+      "new": false
+    },
+    {
+      "symbol": "GRAMMY",
+      "position": "BUY",
+      "date": "08/2024",
+      "price": 2.98,
+      "new": false
+    },
+    {
+      "symbol": "GYT",
+      "position": "BUY",
+      "date": "12/2024",
+      "price": 182.0,
+      "new": false
+    },
+    {
+      "symbol": "HTC",
+      "position": "SELL",
+      "date": "11/2023",
+      "price": 15.7,
+      "new": false
+    },
+    {
+      "symbol": "IRC",
+      "position": "BUY",
+      "date": "01/2026",
+      "price": 11.8,
+      "new": false
+    },
+    {
+      "symbol": "JSP",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 1.71,
+      "new": false
+    },
+    {
+      "symbol": "JTS",
+      "position": "BUY",
+      "date": "12/2025",
+      "price": 36.0,
+      "new": false
+    },
+    {
+      "symbol": "KASET",
+      "position": "SELL",
+      "date": "11/2022",
+      "price": 0.7,
+      "new": false
+    },
+    {
+      "symbol": "MBK",
+      "position": "SELL",
+      "date": "03/2025",
+      "price": 19.4,
+      "new": false
+    },
+    {
+      "symbol": "MSC",
+      "position": "SELL",
+      "date": "02/2023",
+      "price": 6.0,
+      "new": false
+    },
+    {
+      "symbol": "NYT",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 3.84,
+      "new": false
+    },
+    {
+      "symbol": "PAF",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 0.95,
+      "new": false
+    },
+    {
+      "symbol": "PG",
+      "position": "SELL",
+      "date": "06/2024",
+      "price": 6.6,
+      "new": false
+    },
+    {
+      "symbol": "PHOL",
+      "position": "SELL",
+      "date": "07/2025",
+      "price": 3.1,
+      "new": false
+    },
+    {
+      "symbol": "PLANB",
+      "position": "BUY",
+      "date": "05/2026",
+      "price": 4.14,
+      "new": false
+    },
+    {
+      "symbol": "PLE",
+      "position": "BUY",
+      "date": "01/2026",
+      "price": 0.09,
+      "new": false
+    },
+    {
+      "symbol": "PM",
+      "position": "SELL",
+      "date": "05/2026",
+      "price": 10.7,
+      "new": false
+    },
+    {
+      "symbol": "PRG",
+      "position": "BUY",
+      "date": "10/2025",
+      "price": 9.25,
+      "new": false
+    },
+    {
+      "symbol": "PRIN",
+      "position": "BUY",
+      "date": "12/2025",
+      "price": 1.35,
+      "new": false
+    },
+    {
+      "symbol": "PRO",
+      "position": "SELL",
+      "date": "09/2020",
+      "price": 0.08,
+      "new": false
+    },
+    {
+      "symbol": "PSL",
+      "position": "BUY",
+      "date": "08/2025",
+      "price": 7.1,
+      "new": false
+    },
+    {
+      "symbol": "PTG",
+      "position": "BUY",
+      "date": "08/2025",
+      "price": 7.45,
+      "new": false
+    },
+    {
+      "symbol": "QTC",
+      "position": "BUY",
+      "date": "07/2024",
+      "price": 4.56,
+      "new": false
+    },
+    {
+      "symbol": "RCL",
+      "position": "BUY",
+      "date": "05/2024",
+      "price": 31.75,
+      "new": false
+    },
+    {
+      "symbol": "RPH",
+      "position": "SELL",
+      "date": "03/2024",
+      "price": 4.92,
+      "new": false
+    },
+    {
+      "symbol": "SAK",
+      "position": "BUY",
+      "date": "10/2025",
+      "price": 3.08,
+      "new": false
+    },
+    {
+      "symbol": "SAMART",
+      "position": "SELL",
+      "date": "06/2025",
+      "price": 5.55,
+      "new": false
+    },
+    {
+      "symbol": "SAUCE",
+      "position": "SELL",
+      "date": "09/2024",
+      "price": 40.75,
+      "new": false
+    },
+    {
+      "symbol": "SCN",
+      "position": "BUY",
+      "date": "07/2025",
+      "price": 0.43,
+      "new": false
+    },
+    {
+      "symbol": "SE",
+      "position": "BUY",
+      "date": "09/2025",
+      "price": 0.48,
+      "new": false
+    },
+    {
+      "symbol": "SEAFCO",
+      "position": "BUY",
+      "date": "04/2024",
+      "price": 3.02,
+      "new": false
+    },
+    {
+      "symbol": "SEAOIL",
+      "position": "BUY",
+      "date": "05/2025",
+      "price": 3.1,
+      "new": false
+    },
+    {
+      "symbol": "SGF",
+      "position": "BUY",
+      "date": "10/2024",
+      "price": 0.14,
+      "new": false
+    },
+    {
+      "symbol": "SGP",
+      "position": "BUY",
+      "date": "01/2025",
+      "price": 8.1,
+      "new": false
+    },
+    {
+      "symbol": "SHANG",
+      "position": "BUY",
+      "date": "06/2024",
+      "price": 45.0,
+      "new": false
+    },
+    {
+      "symbol": "SLP",
+      "position": "BUY",
+      "date": "05/2024",
+      "price": 0.45,
+      "new": false
+    },
+    {
+      "symbol": "SMART",
+      "position": "BUY",
+      "date": "03/2026",
+      "price": 0.54,
+      "new": false
+    },
+    {
+      "symbol": "SMT",
+      "position": "BUY",
+      "date": "07/2025",
+      "price": 3.68,
+      "new": false
+    },
+    {
+      "symbol": "SNP",
+      "position": "BUY",
+      "date": "02/2026",
+      "price": 8.95,
+      "new": false
+    },
+    {
+      "symbol": "SPA",
+      "position": "BUY",
+      "date": "04/2026",
+      "price": 3.1,
+      "new": false
+    },
+    {
+      "symbol": "SPRC",
+      "position": "BUY",
+      "date": "11/2025",
+      "price": 7.05,
+      "new": false
+    },
+    {
+      "symbol": "SQ",
+      "position": "BUY",
+      "date": "05/2024",
+      "price": 0.19,
+      "new": false
+    },
+    {
+      "symbol": "SSF",
+      "position": "BUY",
+      "date": "04/2026",
+      "price": 5.05,
+      "new": false
+    },
+    {
+      "symbol": "SSP",
+      "position": "BUY",
+      "date": "04/2026",
+      "price": 4.0,
+      "new": false
+    },
+    {
+      "symbol": "SST",
+      "position": "BUY",
+      "date": "05/2026",
+      "price": 0.96,
+      "new": false
+    },
+    {
+      "symbol": "STPI",
+      "position": "BUY",
+      "date": "06/2025",
+      "price": 5.6,
+      "new": false
+    },
+    {
+      "symbol": "SUN",
+      "position": "SELL",
+      "date": "10/2023",
+      "price": 2.42,
+      "new": false
+    },
+    {
+      "symbol": "SUSCO",
+      "position": "SELL",
+      "date": "05/2024",
+      "price": 2.08,
+      "new": false
+    }
   ]
 }
