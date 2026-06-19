@@ -7,34 +7,16 @@ SELL = MACD zone>0 + MACD cross down + histogram เขียวอ่อน→�
 
 import yfinance as yf
 import requests
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 WEBHOOK_URL = "https://n8n.jupetor-cmms.com/webhook/tradingview-jts"
 TIMEFRAME   = "1mo"
 PERIOD      = "10y"
+THAI_TZ     = timezone(timedelta(hours=7))
 
 STOCKS = [
     "PTT.BK",    "AOT.BK",    "CPALL.BK",  "SCB.BK",    "KBANK.BK",
-    "BBL.BK",    "KTB.BK",    "BAY.BK",    "TTB.BK",    "TISCO.BK",
-    "SCC.BK",    "SCCC.BK",   "TBSP.BK",   "TPIPL.BK",  "PTTEP.BK",
-    "PTTGC.BK",  "TOP.BK",    "IRPC.BK",   "BCP.BK",    "GULF.BK",
-    "GPSC.BK",   "EGCO.BK",   "RATCH.BK",  "BGRIM.BK",  "CPN.BK",
-    "CRC.BK",    "BJC.BK",    "HMPRO.BK",  "MINT.BK",   "ERW.BK",
-    "CENTEL.BK", "AWC.BK",    "TRUE.BK",   "ADVANC.BK", "JAS.BK",
-    "BH.BK",     "BCH.BK",    "CHG.BK",    "CPF.BK",    "TU.BK",
-    "BTG.BK",    "GFPT.BK",   "BEM.BK",    "BTS.BK",    "CK.BK",
-    "WHA.BK",    "AMATA.BK",  "LH.BK",     "AP.BK",     "QH.BK",
-    "SIRI.BK",   "ORI.BK",    "OSP.BK",    "CBG.BK",    "ICHI.BK",
-    "KCE.BK",    "DELTA.BK",  "HANA.BK",   "SVI.BK",    "IVL.BK",
-    "SAWAD.BK",  "MTC.BK",    "TIDLOR.BK", "AEONTS.BK", "KTC.BK",
-    "MALEE.BK",  "TKN.BK",    "JMART.BK",  "SPALI.BK",  "PSH.BK",
-    "SC.BK",     "BANPU.BK",  "STA.BK",    "PYLON.BK",  "GLOBAL.BK",
-    "MAJOR.BK",  "RS.BK",     "VGI.BK",    "TQM.BK",    "DIF.BK",
-    "JASIF.BK",  "SINGER.BK", "BE8.BK",    "MFEC.BK",   "NRF.BK",
-    "SAPPE.BK",  "OISHI.BK",  "TNP.BK",    "NCH.BK",    "NOBLE.BK",
-    "BEAUTY.BK", "ROJNA.BK",  "SECURE.BK", "WORK.BK",   "INSET.BK",
-    "THCOM.BK",  "ITD.BK",    "NTV.BK",    "ADVANC.BK", "SCB.BK",
-]
+   ]
 
 def ema(series, period):
     return series.ewm(span=period, adjust=False).mean()
@@ -90,9 +72,10 @@ def scan(df):
     return position, last_date, new_signal
 
 def send_webhook(symbol, signal, price, last_date):
-    name  = symbol.replace(".BK", "")
-    emoji = "✅" if signal == "BUY" else "🔴"
-    payload = {
+    name     = symbol.replace(".BK", "")
+    emoji    = "✅" if signal == "BUY" else "🔴"
+    now_thai = datetime.now(THAI_TZ).strftime('%d/%m/%Y %H:%M')
+    payload  = {
         "symbol": name,
         "signal": signal,
         "price":  round(price, 2),
@@ -101,9 +84,9 @@ def send_webhook(symbol, signal, price, last_date):
             f"ราคา: {round(price, 2)} บาท\n"
             f"Timeframe: Monthly\n"
             f"สัญญาณ: {last_date.strftime('%m/%Y') if last_date else '-'}\n"
-            f"เวลา: {datetime.now().strftime('%d/%m/%Y %H:%M')}"
+            f"เวลา: {now_thai}"
         ),
-        "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        "time": datetime.now(THAI_TZ).strftime("%Y-%m-%d %H:%M:%S")
     }
     try:
         r = requests.post(WEBHOOK_URL, json=payload, timeout=10)
@@ -112,9 +95,10 @@ def send_webhook(symbol, signal, price, last_date):
         print(f"    → webhook error: {e}")
 
 def main():
+    now_thai = datetime.now(THAI_TZ).strftime('%d/%m/%Y %H:%M:%S')
     print(f"\n{'='*60}")
     print(f"  JTS MACD Scanner v5.0 — Monthly")
-    print(f"  {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+    print(f"  {now_thai}")
     print(f"{'='*60}\n")
 
     results = []
@@ -144,7 +128,6 @@ def main():
                 "new":      bool(new_signal)
             })
 
-            # ส่ง webhook ทุกตัวที่เป็น BUY หรือ SELL
             if position in ("BUY", "SELL"):
                 send_webhook(symbol, position, price, last_date)
 
