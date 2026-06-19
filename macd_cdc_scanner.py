@@ -1,7 +1,8 @@
 """
-JTS MACD Scanner v5.0
+JTS PPL MACD Scanner v5.0
 BUY  = MACD zone<0 + MACD cross up + histogram ชมพู→เขียว
 SELL = MACD zone>0 + MACD cross down + histogram เขียวอ่อน→แดง
+ส่ง webhook ทุกตัวที่เป็น BUY หรือ SELL
 """
 
 import yfinance as yf
@@ -32,7 +33,7 @@ STOCKS = [
     "JASIF.BK",  "SINGER.BK", "BE8.BK",    "MFEC.BK",   "NRF.BK",
     "SAPPE.BK",  "OISHI.BK",  "TNP.BK",    "NCH.BK",    "NOBLE.BK",
     "BEAUTY.BK", "ROJNA.BK",  "SECURE.BK", "WORK.BK",   "INSET.BK",
-    "THCOM.BK",  "ITD.BK",    "NTV.BK",    "OSP.BK",    "BGRIM.BK",
+    "THCOM.BK",  "ITD.BK",    "NTV.BK",    "ADVANC.BK", "SCB.BK",
 ]
 
 def ema(series, period):
@@ -53,8 +54,8 @@ def scan(df):
 
     macd_line, sig_line, hist = calc_macd(close)
 
-    position  = "NONE"
-    last_date = None
+    position   = "NONE"
+    last_date  = None
     new_signal = None
     bars = len(close)
 
@@ -67,27 +68,19 @@ def scan(df):
         pm = macd_line.iloc[i-1]
         ps = sig_line.iloc[i-1]
 
-        zone_bear = m < 0 and s < 0
-        zone_bull = m > 0 and s > 0
-        cross_up   = pm <= ps and m > s
-        cross_down = pm >= ps and m < s
-
-        # ชมพู = hist<0 และกำลังดีขึ้น
-        # เขียว = hist>0 และกำลังเพิ่ม
+        zone_bear     = m < 0 and s < 0
+        zone_bull     = m > 0 and s > 0
+        cross_up      = pm <= ps and m > s
+        cross_down    = pm >= ps and m < s
         pink_to_green = (h1 < 0 and h1 > h2) and (h > 0 and h > h1)
+        light_to_red  = (h1 > 0 and h1 < h2) and (h < 0 and h < h1)
 
-        # เขียวอ่อน = hist>0 และกำลังลด
-        # แดง = hist<0 และกำลังลด
-        light_to_red = (h1 > 0 and h1 < h2) and (h < 0 and h < h1)
-
-        # BUY = zone<0 + cross up + ชมพู→เขียว
         if zone_bear and cross_up and pink_to_green:
             position  = "BUY"
             last_date = df.index[i]
             if i == bars - 1:
                 new_signal = "BUY"
 
-        # SELL = zone>0 + cross down + เขียวอ่อน→แดง
         elif zone_bull and cross_down and light_to_red:
             position  = "SELL"
             last_date = df.index[i]
@@ -100,7 +93,9 @@ def send_webhook(symbol, signal, price, last_date):
     name  = symbol.replace(".BK", "")
     emoji = "✅" if signal == "BUY" else "🔴"
     payload = {
-        "symbol": name, "signal": signal, "price": round(price, 2),
+        "symbol": name,
+        "signal": signal,
+        "price":  round(price, 2),
         "message": (
             f"{emoji} {signal} — {name}\n"
             f"ราคา: {round(price, 2)} บาท\n"
@@ -123,6 +118,7 @@ def main():
     print(f"{'='*60}\n")
 
     results = []
+
     for i, symbol in enumerate(STOCKS, 1):
         print(f"[{i:3d}/{len(STOCKS)}] {symbol:<15}", end=" ")
         try:
@@ -139,11 +135,18 @@ def main():
             new      = " ← ใหม่!" if new_signal else ""
 
             print(f"{icon} {str(position):<5} (ล่าสุด: {date_str}){new}")
-            results.append({"symbol": symbol.replace(".BK",""), "position": position,
-                            "date": date_str, "price": round(price,2), "new": bool(new_signal)})
-            
-        if position == "BUY" or position == "SELL":
-              send_webhook(symbol, position, price, last_date)
+
+            results.append({
+                "symbol":   symbol.replace(".BK", ""),
+                "position": position,
+                "date":     date_str,
+                "price":    round(price, 2),
+                "new":      bool(new_signal)
+            })
+
+            # ส่ง webhook ทุกตัวที่เป็น BUY หรือ SELL
+            if position in ("BUY", "SELL"):
+                send_webhook(symbol, position, price, last_date)
 
         except Exception as e:
             print(f"❌ {e}")
