@@ -1,9 +1,9 @@
 """
-JTS MACD+CDC Scanner v2.0
+JTS MACD+CDC Scanner v3.0
 สแกน 100 หุ้น SET บน Monthly timeframe
-- รันข้อมูลย้อนหลังทั้งหมด เพื่อดูสถานะปัจจุบัน
-- แสดงว่าแต่ละหุ้นอยู่ใน BUY / SELL / NONE
-- ถ้าเพิ่งเกิดสัญญาณใหม่ในเดือนล่าสุด → ส่ง webhook
+Logic ผ่อนลง:
+  BUY  = MACD zone<0 + MACD cross up + histogram ชมพู→เขียว + EMA12 > EMA26
+  SELL = MACD zone>0 + MACD cross down + histogram เขียวอ่อน→แดง + EMA12 < EMA26
 """
 
 import yfinance as yf
@@ -16,30 +16,29 @@ from datetime import datetime
 WEBHOOK_URL = "https://n8n.jupetor-cmms.com/webhook/tradingview-jts"
 TIMEFRAME   = "1mo"
 PERIOD      = "10y"
-SEND_WEBHOOK_ONLY_NEW = True  # True = ส่งเฉพาะสัญญาณใหม่เดือนล่าสุด
 
-# ─── 100 หุ้น SET ─────────────────────────────────────────
+# ─── 100 หุ้น SET (อัปเดตแล้ว) ───────────────────────────
 STOCKS = [
-    "PTT.BK",   "AOT.BK",   "CPALL.BK", "SCB.BK",   "KBANK.BK",
-    "BBL.BK",   "KTB.BK",   "BAY.BK",   "TTB.BK",   "TISCO.BK",
-    "SCC.BK",   "SCCC.BK",  "TBSP.BK",  "TPI.BK",   "TPIPL.BK",
-    "PTTEP.BK", "PTTGC.BK", "TOP.BK",   "IRPC.BK",  "BCP.BK",
-    "GULF.BK",  "GPSC.BK",  "EGCO.BK",  "RATCH.BK", "BGRIM.BK",
-    "CPN.BK",   "CRC.BK",   "ROBINS.BK","BJC.BK",   "HMPRO.BK",
-    "MINT.BK",  "ERW.BK",   "CENTEL.BK","SHR.BK",   "AWC.BK",
-    "TRUE.BK",  "DTAC.BK",  "ADVANC.BK","INTUCH.BK","JAS.BK",
-    "BH.BK",    "BCH.BK",   "CHG.BK",   "NTV.BK",   "SVH.BK",
-    "CPF.BK",   "TU.BK",    "BTG.BK",   "GFPT.BK",  "NRF.BK",
-    "BEM.BK",   "BTS.BK",   "STEC.BK",  "CK.BK",    "ITD.BK",
-    "WHA.BK",   "AMATA.BK", "ROJNA.BK", "IEAT.BK",  "NWPL.BK",
-    "LH.BK",    "AP.BK",    "QH.BK",    "SIRI.BK",  "ORI.BK",
-    "OSP.BK",   "SAPPE.BK", "CBG.BK",   "ICHI.BK",  "OISHI.BK",
-    "KCE.BK",   "DELTA.BK", "HANA.BK",  "SVI.BK",   "CCET.BK",
-    "IVL.BK",   "INDR.BK",  "SMPC.BK",  "TPE.BK",   "HMC.BK",
-    "SAWAD.BK", "MTC.BK",   "TIDLOR.BK","AEONTS.BK","KTC.BK",
-    "BEAUTY.BK","MALEE.BK", "TKN.BK",   "TNP.BK",   "JMART.BK",
-    "SPALI.BK", "PSH.BK",   "SC.BK",    "NOBLE.BK", "PLAM.BK",
-    "BANPU.BK", "RPCX.BK",  "STA.BK",   "NCH.BK",   "PYLON.BK",
+    "PTT.BK",    "AOT.BK",    "CPALL.BK",  "SCB.BK",    "KBANK.BK",
+    "BBL.BK",    "KTB.BK",    "BAY.BK",    "TTB.BK",    "TISCO.BK",
+    "SCC.BK",    "SCCC.BK",   "TBSP.BK",   "TPIPL.BK",  "PTTEP.BK",
+    "PTTGC.BK",  "TOP.BK",    "IRPC.BK",   "BCP.BK",    "GULF.BK",
+    "GPSC.BK",   "EGCO.BK",   "RATCH.BK",  "BGRIM.BK",  "CPN.BK",
+    "CRC.BK",    "BJC.BK",    "HMPRO.BK",  "MINT.BK",   "ERW.BK",
+    "CENTEL.BK", "SHR.BK",    "AWC.BK",    "TRUE.BK",   "ADVANC.BK",
+    "JAS.BK",    "BH.BK",     "BCH.BK",    "CHG.BK",    "NTV.BK",
+    "CPF.BK",    "TU.BK",     "BTG.BK",    "GFPT.BK",   "NRF.BK",
+    "BEM.BK",    "BTS.BK",    "CK.BK",     "ITD.BK",    "WHA.BK",
+    "AMATA.BK",  "ROJNA.BK",  "LH.BK",     "AP.BK",     "QH.BK",
+    "SIRI.BK",   "ORI.BK",    "OSP.BK",    "SAPPE.BK",  "CBG.BK",
+    "ICHI.BK",   "OISHI.BK",  "KCE.BK",    "DELTA.BK",  "HANA.BK",
+    "SVI.BK",    "IVL.BK",    "SAWAD.BK",  "MTC.BK",    "TIDLOR.BK",
+    "AEONTS.BK", "KTC.BK",    "BEAUTY.BK", "MALEE.BK",  "TKN.BK",
+    "TNP.BK",    "JMART.BK",  "SPALI.BK",  "PSH.BK",    "SC.BK",
+    "NOBLE.BK",  "BANPU.BK",  "STA.BK",    "NCH.BK",    "PYLON.BK",
+    "GLOBAL.BK", "MAJOR.BK",  "RS.BK",     "VGI.BK",    "WORK.BK",
+    "TQM.BK",    "THCOM.BK",  "INSET.BK",  "DIF.BK",    "JASIF.BK",
+    "INTUCH.BK", "SINGER.BK", "SECURE.BK", "BE8.BK",    "MFEC.BK",
 ]
 
 # ─── EMA ──────────────────────────────────────────────────
@@ -55,7 +54,7 @@ def calc_macd(close, fast=12, slow=26, signal=9):
     histogram   = macd_line - signal_line
     return macd_line, signal_line, histogram
 
-# ─── Scan ย้อนหลังทั้งหมด → คืนสถานะปัจจุบัน + สัญญาณล่าสุด ──
+# ─── Scan ─────────────────────────────────────────────────
 def scan_history(df):
     close = df["Close"].squeeze()
     if len(close) < 30:
@@ -65,12 +64,9 @@ def scan_history(df):
     slow_ema  = ema(close, 26)
     macd_line, signal_line, hist = calc_macd(close)
 
-    buy_step   = 0
-    sell_step  = 0
-    current_position = "NONE"   # สถานะล่าสุด
-    last_signal      = None     # สัญญาณล่าสุดที่เกิด
+    current_position = "NONE"
     last_signal_date = None
-    new_signal       = None     # สัญญาณใหม่ในแท่งล่าสุด
+    new_signal       = None
 
     bars = len(close)
 
@@ -84,8 +80,6 @@ def scan_history(df):
         ps  = signal_line.iloc[i - 1]
         f   = fast_ema.iloc[i]
         sl  = slow_ema.iloc[i]
-        pf  = fast_ema.iloc[i - 1]
-        psl = slow_ema.iloc[i - 1]
 
         zone_bear = m < 0 and s < 0
         zone_bull = m > 0 and s > 0
@@ -95,46 +89,25 @@ def scan_history(df):
 
         is_green       = h > 0 and h > h1
         is_red         = h < 0 and h < h1
-        is_light_green = h > 0 and h < h1
 
         pink_to_green = (h1 < 0 and h1 > h2) and is_green
         light_to_red  = (h1 > 0 and h1 < h2) and is_red
 
-        cdc_cross_up   = pf <= psl and f > sl
-        cdc_cross_down = pf >= psl and f < sl
+        cdc_bull = f > sl   # EMA12 > EMA26
+        cdc_bear = f < sl   # EMA12 < EMA26
 
-        # BUY state
-        if not zone_bear:
-            buy_step = 0
-        if zone_bear and macd_cross_up and buy_step == 0:
-            buy_step = 1
-        if pink_to_green and buy_step == 1:
-            buy_step = 2
-        if cdc_cross_up and buy_step == 2:
-            buy_step = 3
-
-        if buy_step == 3:
-            buy_step = 0
+        # ── BUY ──
+        # MACD zone<0 + cross up + ชมพู→เขียว + EMA12 > EMA26
+        if zone_bear and macd_cross_up and pink_to_green and cdc_bull:
             current_position = "BUY"
-            last_signal      = "BUY"
             last_signal_date = df.index[i]
             if i == bars - 1:
                 new_signal = "BUY"
 
-        # SELL state
-        if not zone_bull:
-            sell_step = 0
-        if zone_bull and macd_cross_down and sell_step == 0:
-            sell_step = 1
-        if light_to_red and sell_step == 1:
-            sell_step = 2
-        if cdc_cross_down and sell_step == 2:
-            sell_step = 3
-
-        if sell_step == 3:
-            sell_step = 0
+        # ── SELL ──
+        # MACD zone>0 + cross down + เขียวอ่อน→แดง + EMA12 < EMA26
+        if zone_bull and macd_cross_down and light_to_red and cdc_bear:
             current_position = "SELL"
-            last_signal      = "SELL"
             last_signal_date = df.index[i]
             if i == bars - 1:
                 new_signal = "SELL"
@@ -167,7 +140,7 @@ def send_webhook(symbol, signal, price, last_date):
 # ─── Main ──────────────────────────────────────────────────
 def main():
     print(f"\n{'='*60}")
-    print(f"  JTS MACD+CDC Scanner v2.0 — Monthly")
+    print(f"  JTS MACD+CDC Scanner v3.0 — Monthly")
     print(f"  {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
     print(f"{'='*60}\n")
 
@@ -184,10 +157,10 @@ def main():
                 continue
 
             position, last_date, new_signal = scan_history(df)
-            price = float(df["Close"].iloc[-1].squeeze()) if hasattr(df["Close"].iloc[-1], 'squeeze') else float(df["Close"].iloc[-1])
+            price = float(df["Close"].iloc[-1].squeeze() if hasattr(df["Close"].iloc[-1], 'squeeze') else df["Close"].iloc[-1])
 
-            icon = "🟢" if position == "BUY" else "🔴" if position == "SELL" else "⬜"
-            new  = " ← ใหม่!" if new_signal else ""
+            icon     = "🟢" if position == "BUY" else "🔴" if position == "SELL" else "⬜"
+            new      = " ← ใหม่!" if new_signal else ""
             date_str = last_date.strftime("%m/%Y") if last_date else "-"
 
             print(f"{icon} {position:<5} (ล่าสุด: {date_str}){new}")
@@ -200,7 +173,6 @@ def main():
                 "new":      bool(new_signal)
             })
 
-            # ส่ง webhook เฉพาะสัญญาณใหม่
             if new_signal:
                 send_webhook(symbol, new_signal, price, last_date)
 
@@ -219,17 +191,17 @@ def main():
     print(f"\n🟢 BUY  ({len(buy_list)} ตัว):")
     for r in buy_list:
         new = " ← ใหม่!" if r["new"] else ""
-        print(f"   {r['symbol']:<10} ราคา {r['price']:>8.2f}  (สัญญาณ: {r['date']}){new}")
+        print(f"   {r['symbol']:<12} ราคา {r['price']:>8.2f}  (สัญญาณ: {r['date']}){new}")
 
     print(f"\n🔴 SELL ({len(sell_list)} ตัว):")
     for r in sell_list:
         new = " ← ใหม่!" if r["new"] else ""
-        print(f"   {r['symbol']:<10} ราคา {r['price']:>8.2f}  (สัญญาณ: {r['date']}){new}")
+        print(f"   {r['symbol']:<12} ราคา {r['price']:>8.2f}  (สัญญาณ: {r['date']}){new}")
 
     print(f"\n⚡ สัญญาณใหม่เดือนนี้ ({len(new_list)} ตัว):")
     for r in new_list:
         icon = "🟢" if r["position"] == "BUY" else "🔴"
-        print(f"   {icon} {r['symbol']:<10} {r['position']}  ราคา {r['price']:>8.2f}")
+        print(f"   {icon} {r['symbol']:<12} {r['position']}  ราคา {r['price']:>8.2f}")
 
     print(f"\n{'='*60}\n")
 
