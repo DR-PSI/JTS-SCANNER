@@ -1,12 +1,10 @@
 """
-JTS MACD+CDC Scanner v4.0
-BUY  = MACD zone<0 + EMA12 > EMA26
-SELL = MACD zone>0 + EMA12 < EMA26
-(ผ่อนมากเพื่อ debug ก่อน)
+JTS MACD Scanner v5.0
+BUY  = MACD zone<0 + MACD cross up + histogram ชมพู→เขียว
+SELL = MACD zone>0 + MACD cross down + histogram เขียวอ่อน→แดง
 """
 
 import yfinance as yf
-import pandas as pd
 import requests
 from datetime import datetime
 
@@ -33,8 +31,8 @@ STOCKS = [
     "MAJOR.BK",  "RS.BK",     "VGI.BK",    "TQM.BK",    "DIF.BK",
     "JASIF.BK",  "SINGER.BK", "BE8.BK",    "MFEC.BK",   "NRF.BK",
     "SAPPE.BK",  "OISHI.BK",  "TNP.BK",    "NCH.BK",    "NOBLE.BK",
-    "BEAUTY.BK", "ROJNA.BK",  "BGRIM.BK",  "SECURE.BK", "WORK.BK",
-    "INSET.BK",  "THCOM.BK",  "ITD.BK",    "NTV.BK",    "INTUCH.BK",
+    "BEAUTY.BK", "ROJNA.BK",  "SECURE.BK", "WORK.BK",   "INSET.BK",
+    "THCOM.BK",  "ITD.BK",    "NTV.BK",    "OSP.BK",    "BGRIM.BK",
 ]
 
 def ema(series, period):
@@ -53,11 +51,9 @@ def scan(df):
     if len(close) < 30:
         return None, None, None
 
-    fast = ema(close, 12)
-    slow = ema(close, 26)
     macd_line, sig_line, hist = calc_macd(close)
 
-    position = "NONE"
+    position  = "NONE"
     last_date = None
     new_signal = None
     bars = len(close)
@@ -70,43 +66,33 @@ def scan(df):
         h2 = hist.iloc[i-2]
         pm = macd_line.iloc[i-1]
         ps = sig_line.iloc[i-1]
-        f  = fast.iloc[i]
-        sl = slow.iloc[i]
 
         zone_bear = m < 0 and s < 0
         zone_bull = m > 0 and s > 0
         cross_up   = pm <= ps and m > s
         cross_down = pm >= ps and m < s
-        pink_to_green = (h1 < 0 and h1 > h2) and (h > 0 and h > h1)
-        light_to_red  = (h1 > 0 and h1 < h2) and (h < 0 and h < h1)
-        cdc_bull = f > sl
-        cdc_bear = f < sl
 
-        # BUY: zone<0 + cross up + ชมพู→เขียว + cdc bull
-        if zone_bear and cross_up and pink_to_green and cdc_bull:
+        # ชมพู = hist<0 และกำลังดีขึ้น
+        # เขียว = hist>0 และกำลังเพิ่ม
+        pink_to_green = (h1 < 0 and h1 > h2) and (h > 0 and h > h1)
+
+        # เขียวอ่อน = hist>0 และกำลังลด
+        # แดง = hist<0 และกำลังลด
+        light_to_red = (h1 > 0 and h1 < h2) and (h < 0 and h < h1)
+
+        # BUY = zone<0 + cross up + ชมพู→เขียว
+        if zone_bear and cross_up and pink_to_green:
             position  = "BUY"
             last_date = df.index[i]
-            new_signal = "BUY" if i == bars-1 else None
+            if i == bars - 1:
+                new_signal = "BUY"
 
-        # SELL: zone>0 + cross down + เขียวอ่อน→แดง + cdc bear
-        elif zone_bull and cross_down and light_to_red and cdc_bear:
+        # SELL = zone>0 + cross down + เขียวอ่อน→แดง
+        elif zone_bull and cross_down and light_to_red:
             position  = "SELL"
             last_date = df.index[i]
-            new_signal = "SELL" if i == bars-1 else None
-
-        # ── debug: แสดง partial match ──
-        if i == bars-1:
-            matches = []
-            if zone_bear: matches.append("zone<0")
-            if zone_bull: matches.append("zone>0")
-            if cross_up:  matches.append("crossUp")
-            if cross_down: matches.append("crossDown")
-            if pink_to_green: matches.append("pink→green")
-            if light_to_red:  matches.append("green→red")
-            if cdc_bull: matches.append("cdcBull")
-            if cdc_bear: matches.append("cdcBear")
-            if matches:
-                print(f"      debug: {', '.join(matches)}")
+            if i == bars - 1:
+                new_signal = "SELL"
 
     return position, last_date, new_signal
 
@@ -132,7 +118,7 @@ def send_webhook(symbol, signal, price, last_date):
 
 def main():
     print(f"\n{'='*60}")
-    print(f"  JTS MACD+CDC Scanner v4.0 — Monthly")
+    print(f"  JTS MACD Scanner v5.0 — Monthly")
     print(f"  {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
     print(f"{'='*60}\n")
 
@@ -147,7 +133,7 @@ def main():
                 continue
 
             position, last_date, new_signal = scan(df)
-            price    = float(df["Close"].iloc[-1].item() if hasattr(df["Close"].iloc[-1], 'item') else df["Close"].iloc[-1])
+            price    = float(df["Close"].iloc[-1].item())
             icon     = "🟢" if position == "BUY" else "🔴" if position == "SELL" else "⬜"
             date_str = last_date.strftime("%m/%Y") if last_date else "-"
             new      = " ← ใหม่!" if new_signal else ""
@@ -164,6 +150,7 @@ def main():
     print(f"\n{'='*60}")
     print(f"  สรุปสถานะปัจจุบัน")
     print(f"{'='*60}")
+
     buy_list  = [r for r in results if r["position"] == "BUY"]
     sell_list = [r for r in results if r["position"] == "SELL"]
     new_list  = [r for r in results if r["new"]]
