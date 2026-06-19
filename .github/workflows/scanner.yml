@@ -8,6 +8,8 @@ on:
 jobs:
   scan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v3
 
@@ -20,4 +22,12 @@ jobs:
         run: pip install yfinance pandas requests
 
       - name: Run scanner
-        run: python macd_cdc_scanner.py
+        run: python macd_cdc_scanner_web.py
+
+      - name: Commit scanner-data.json
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add scanner-data.json
+          git diff --staged --quiet || git commit -m "Update scanner-data.json $(date +'%Y-%m-%d')"
+          git push
