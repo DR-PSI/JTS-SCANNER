@@ -141,8 +141,9 @@ def main():
             print(f"{icon} {str(position):<5} (ล่าสุด: {date_str}){new}")
             results.append({"symbol": symbol.replace(".BK",""), "position": position,
                             "date": date_str, "price": round(price,2), "new": bool(new_signal)})
-            if new_signal:
-                send_webhook(symbol, new_signal, price, last_date)
+            
+        if position == "BUY" or position == "SELL":
+              send_webhook(symbol, position, price, last_date)
 
         except Exception as e:
             print(f"❌ {e}")
