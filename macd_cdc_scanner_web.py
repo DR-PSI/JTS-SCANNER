@@ -1,7 +1,7 @@
 """
-JTS MACD Scanner v8.0
+JTS MACD Scanner v10.0
 - สแกน SET+MAI ~300 ตัว
-- บันทึกข้อมูลกราฟ 60 เดือน (5 ปี) สำหรับ Chart.js
+- บันทึก OHLC + EMA12/26 + MACD สำหรับ Candlestick chart
 """
 
 import yfinance as yf
@@ -9,11 +9,11 @@ import requests
 import json
 from datetime import datetime, timezone, timedelta
 
-WEBHOOK_URL = "https://n8n.jupetor-cmms.com/webhook/tradingview-jts"
-TIMEFRAME   = "1mo"
-PERIOD      = "10y"
-CHART_MONTHS = 60  # แสดงกราฟ 5 ปี
-THAI_TZ     = timezone(timedelta(hours=7))
+WEBHOOK_URL  = "https://n8n.jupetor-cmms.com/webhook/tradingview-jts"
+TIMEFRAME    = "1mo"
+PERIOD       = "10y"
+CHART_MONTHS = 60
+THAI_TZ      = timezone(timedelta(hours=7))
 
 SET100 = [
     "PTT.BK","PTTEP.BK","PTTGC.BK","TOP.BK","IRPC.BK","BCP.BK",
@@ -70,7 +70,7 @@ def calc_macd(close):
 def scan(df):
     close = df["Close"].squeeze()
     if len(close) < 30:
-        return None, None, None, []
+        return None, None, None, {}
 
     macd_line, sig_line, hist = calc_macd(close)
     position = "NONE"; last_date = None; new_signal = None
@@ -107,14 +107,24 @@ def scan(df):
             })
             if i == bars - 1: new_signal = "SELL"
 
-    # เก็บเฉพาะ 60 เดือนล่าสุด
+    # เก็บ 60 เดือนล่าสุด
     df_chart = df.tail(CHART_MONTHS)
     close_c  = df_chart["Close"].squeeze()
+    open_c   = df_chart["Open"].squeeze()
+    high_c   = df_chart["High"].squeeze()
+    low_c    = df_chart["Low"].squeeze()
     ml, sl, hl = calc_macd(close_c)
+    e12 = ema(close_c, 12)
+    e26 = ema(close_c, 26)
 
     chart = {
         "dates":   [d.strftime("%Y-%m") for d in df_chart.index],
+        "open":    [round(float(v), 2) for v in open_c],
+        "high":    [round(float(v), 2) for v in high_c],
+        "low":     [round(float(v), 2) for v in low_c],
         "close":   [round(float(v), 2) for v in close_c],
+        "ema12":   [round(float(v), 2) for v in e12],
+        "ema26":   [round(float(v), 2) for v in e26],
         "macd":    [round(float(v), 4) for v in ml],
         "signal":  [round(float(v), 4) for v in sl],
         "hist":    [round(float(v), 4) for v in hl],
@@ -157,7 +167,7 @@ def save_json(results):
 def main():
     now_thai = datetime.now(THAI_TZ).strftime('%d/%m/%Y %H:%M:%S')
     print(f"\n{'='*60}")
-    print(f"  JTS MACD Scanner v8.0 — Monthly ({len(STOCKS)} หุ้น)")
+    print(f"  JTS MACD Scanner v10.0 — Monthly ({len(STOCKS)} หุ้น)")
     print(f"  {now_thai}")
     print(f"{'='*60}\n")
 
