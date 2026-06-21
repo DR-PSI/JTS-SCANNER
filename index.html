@@ -21,11 +21,9 @@ body { font-family:'Segoe UI',sans-serif; background:#0d1117; color:#e6edf3; min
 .stat-card.buy .value { color:#3fb950; }
 .stat-card.sell .value { color:#f85149; }
 .stat-card.total .value { color:#58a6ff; }
-.filters { padding:0 24px 16px; display:flex; gap:8px; }
-.btn { padding:6px 16px; border-radius:6px; border:1px solid #30363d; background:#21262d; color:#e6edf3; cursor:pointer; font-size:13px; transition:all 0.2s; }
+.filters { padding:0 24px 16px; display:flex; gap:8px; flex-wrap:wrap; }
+.btn { padding:6px 16px; border-radius:6px; border:1px solid #30363d; background:#21262d; color:#e6edf3; cursor:pointer; font-size:13px; }
 .btn.active { background:#1f6feb; border-color:#1f6feb; color:white; }
-.btn.buy-btn.active { background:#238636; border-color:#238636; }
-.btn.sell-btn.active { background:#da3633; border-color:#da3633; }
 .table-wrap { padding:0 24px 24px; overflow-x:auto; }
 table { width:100%; border-collapse:collapse; font-size:14px; }
 th { padding:10px 16px; text-align:left; font-size:12px; color:#8b949e; border-bottom:1px solid #30363d; }
@@ -35,11 +33,8 @@ tr:hover td { background:#161b22; }
 .badge.buy { background:#0d4a1e; color:#3fb950; border:1px solid #238636; }
 .badge.sell { background:#4a0d0d; color:#f85149; border:1px solid #da3633; }
 .symbol { font-weight:600; color:#58a6ff; cursor:pointer; }
-.symbol:hover { text-decoration:underline; }
 .chart-btn { padding:4px 10px; border-radius:6px; border:1px solid #30363d; background:#21262d; color:#8b949e; cursor:pointer; font-size:12px; }
-.chart-btn:hover { border-color:#58a6ff; color:#58a6ff; }
 .line-btn { padding:4px 10px; border-radius:6px; border:1px solid #238636; background:#0d4a1e; color:#3fb950; cursor:pointer; font-size:12px; }
-.line-btn:hover { background:#238636; color:white; }
 .line-btn.sent { border-color:#58a6ff; background:#1f3a5c; color:#58a6ff; }
 .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:100; align-items:center; justify-content:center; padding:16px; }
 .modal-bg.show { display:flex; }
@@ -48,9 +43,9 @@ tr:hover td { background:#161b22; }
 .modal-title { font-size:18px; font-weight:600; color:#58a6ff; }
 .modal-close { background:none; border:none; color:#8b949e; font-size:20px; cursor:pointer; }
 .modal-body { padding:20px; }
-.chart-container { position:relative; height:280px; margin-bottom:16px; }
-.chart-label { font-size:12px; color:#8b949e; margin-bottom:8px; }
-.cdc-legend { font-size:11px; color:#8b949e; padding:8px; background:#0d1117; border-radius:6px; margin-bottom:12px; line-height:1.8; }
+.chart-container { position:relative; height:300px; margin-bottom:16px; }
+.chart-label { font-size:12px; color:#8b949e; margin-bottom:6px; }
+.cdc-legend { font-size:11px; color:#8b949e; padding:8px 12px; background:#0d1117; border-radius:6px; margin-bottom:12px; line-height:2; }
 .loading { text-align:center; padding:60px; color:#8b949e; }
 .refresh-btn { background:#21262d; border:1px solid #30363d; color:#e6edf3; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; }
 .toast { position:fixed; bottom:24px; right:24px; background:#238636; color:white; padding:12px 20px; border-radius:8px; font-size:14px; opacity:0; transition:opacity 0.3s; pointer-events:none; z-index:999; }
@@ -83,38 +78,33 @@ tr:hover td { background:#161b22; }
 
 <div class="filters">
   <button class="btn active" onclick="filterData('ALL',this)">ทั้งหมด</button>
-  <button class="btn buy-btn" onclick="filterData('BUY',this)">Ready to Buy</button>
-  <button class="btn sell-btn" onclick="filterData('SELL',this)">Ready to Sell</button>
+  <button class="btn" onclick="filterData('BUY',this)">Ready to Buy</button>
+  <button class="btn" onclick="filterData('SELL',this)">Ready to Sell</button>
 </div>
 
 <div class="table-wrap">
   <div class="loading" id="loading">⏳ กำลังโหลด...</div>
   <table id="main-table" style="display:none">
     <thead>
-      <tr>
-        <th>#</th><th>Symbol</th><th>สัญญาณ</th><th>ราคา (บาท)</th>
-        <th>ล่าสุด</th><th>ใหม่</th><th>กราฟ</th><th>ส่ง LINE</th>
-      </tr>
+      <tr><th>#</th><th>Symbol</th><th>สัญญาณ</th><th>ราคา (บาท)</th><th>ล่าสุด</th><th>ใหม่</th><th>กราฟ</th><th>ส่ง LINE</th></tr>
     </thead>
     <tbody id="table-body"></tbody>
   </table>
 </div>
 
-<div class="modal-bg" id="modal-bg" onclick="closeModal(event)">
+<div class="modal-bg" id="modal-bg" onclick="if(event.target.id==='modal-bg')closeModal()">
   <div class="modal">
     <div class="modal-header">
       <span class="modal-title" id="modal-title">กราฟ</span>
-      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+      <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body">
       <div class="cdc-legend">
-        🎨 <strong>CDC Color (ลุงโฉลก):</strong><br>
-        🟢 GREEN = EMA12 > EMA26 + Close > Open &nbsp;|&nbsp;
-        🔴 RED = EMA12 &lt; EMA26 + Close &lt; Open<br>
-        🟡 YELLOW = EMA12 > EMA26 + Close &lt; Open &nbsp;|&nbsp;
-        🟠 ORANGE = EMA12 &lt; EMA26 + Close > Open
+        🎨 <b>CDC Color (ลุงโฉลก):</b><br>
+        🟢 GREEN = EMA12 &gt; EMA26 + Close &gt; Open &nbsp;|&nbsp; 🔴 RED = EMA12 &lt; EMA26 + Close &lt; Open<br>
+        🟡 YELLOW = EMA12 &gt; EMA26 + Close &lt; Open &nbsp;|&nbsp; 🟠 ORANGE = EMA12 &lt; EMA26 + Close &gt; Open
       </div>
-      <div class="chart-label">🕯️ Candlestick + EMA12 🔴 + EMA26 🔵 + Signal Points</div>
+      <div class="chart-label">🕯️ CDC Candlestick + EMA12 🔴 + EMA26 🔵 + Signal</div>
       <div class="chart-container"><canvas id="price-chart"></canvas></div>
       <div class="chart-label">📊 MACD Histogram + Signal Line</div>
       <div class="chart-container"><canvas id="macd-chart"></canvas></div>
@@ -126,52 +116,47 @@ tr:hover td { background:#161b22; }
 
 <script>
 const N8N_WEBHOOK = 'https://n8n.jupetor-cmms.com/webhook/send-line';
-let allData = [];
-let currentFilter = 'ALL';
-let priceChartInst = null;
-let macdChartInst = null;
+let allData = [], currentFilter = 'ALL';
+let priceChart = null, macdChart = null;
 
-const cdcColorMap = {
-  'GREEN':  { up:'#3fb950', down:'#3fb950' },
-  'RED':    { up:'#f85149', down:'#f85149' },
-  'YELLOW': { up:'#d0b023', down:'#d0b023' },
-  'ORANGE': { up:'#f87730', down:'#f87730' }
-};
+function cdcColor(col) {
+  if(col==='GREEN')  return '#3fb950';
+  if(col==='RED')    return '#f85149';
+  if(col==='YELLOW') return '#d0b023';
+  if(col==='ORANGE') return '#f87730';
+  return '#8b949e';
+}
 
 async function loadData() {
-  document.getElementById('loading').style.display = 'block';
-  document.getElementById('main-table').style.display = 'none';
+  document.getElementById('loading').style.display='block';
+  document.getElementById('main-table').style.display='none';
   try {
-    const res = await fetch('scanner-data.json?t=' + Date.now());
+    const res = await fetch('scanner-data.json?t='+Date.now());
     const data = await res.json();
-    allData = data.stocks || [];
-    document.getElementById('last-update').textContent = 'อัปเดต: ' + (data.updated || '-');
-    document.getElementById('total-count').textContent = allData.length;
-    document.getElementById('buy-count').textContent = allData.filter(r=>r.position==='BUY').length;
-    document.getElementById('sell-count').textContent = allData.filter(r=>r.position==='SELL').length;
+    allData = data.stocks||[];
+    document.getElementById('last-update').textContent='อัปเดต: '+(data.updated||'-');
+    document.getElementById('total-count').textContent=allData.length;
+    document.getElementById('buy-count').textContent=allData.filter(r=>r.position==='BUY').length;
+    document.getElementById('sell-count').textContent=allData.filter(r=>r.position==='SELL').length;
     renderTable(currentFilter);
   } catch(e) {
-    document.getElementById('loading').innerHTML = '❌ ไม่พบข้อมูล';
+    document.getElementById('loading').innerHTML='❌ ไม่พบข้อมูล';
   }
 }
 
-function filterData(filter, btn) {
-  currentFilter = filter;
+function filterData(f,btn) {
+  currentFilter=f;
   document.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  renderTable(filter);
+  renderTable(f);
 }
 
-function renderTable(filter) {
-  let rows = allData.filter(r=>r.position!=='NONE');
-  if(filter==='BUY') rows = rows.filter(r=>r.position==='BUY');
-  if(filter==='SELL') rows = rows.filter(r=>r.position==='SELL');
-  rows.sort((a,b) => {
-    if(a.new&&!b.new) return -1;
-    if(!a.new&&b.new) return 1;
-    return b.date.localeCompare(a.date);
-  });
-  document.getElementById('table-body').innerHTML = rows.map((r,i) => `
+function renderTable(f) {
+  let rows=allData.filter(r=>r.position!=='NONE');
+  if(f==='BUY') rows=rows.filter(r=>r.position==='BUY');
+  if(f==='SELL') rows=rows.filter(r=>r.position==='SELL');
+  rows.sort((a,b)=>{if(a.new&&!b.new)return -1;if(!a.new&&b.new)return 1;return b.date.localeCompare(a.date);});
+  document.getElementById('table-body').innerHTML=rows.map((r,i)=>`
     <tr>
       <td style="color:#8b949e">${i+1}</td>
       <td class="symbol" onclick="showChart('${r.symbol}')">${r.symbol} 🕯️</td>
@@ -183,103 +168,121 @@ function renderTable(filter) {
       <td><button class="line-btn" id="btn-${r.symbol}" onclick="sendLine('${r.symbol}','${r.position}',${r.price},'${r.date}',this)">📲 ส่ง LINE</button></td>
     </tr>
   `).join('');
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('main-table').style.display = 'table';
+  document.getElementById('loading').style.display='none';
+  document.getElementById('main-table').style.display='table';
 }
 
 function showChart(symbol) {
-  const stock = allData.find(r=>r.symbol===symbol);
-  if(!stock || !stock.chart) return;
-  const c = stock.chart;
-  document.getElementById('modal-title').textContent = `🎨 ${symbol} — ${stock.position==='BUY'?'⚠️ Ready to Buy':'🔴 Ready to Sell'}`;
+  const stock=allData.find(r=>r.symbol===symbol);
+  if(!stock||!stock.chart) return;
+  const c=stock.chart;
+  document.getElementById('modal-title').textContent=`🎨 ${symbol} — ${stock.position==='BUY'?'⚠️ Ready to Buy':'🔴 Ready to Sell'}`;
   document.getElementById('modal-bg').classList.add('show');
 
-  const candleData = c.dates.map((d,i) => {
-    const col = cdcColorMap[c.cdc_color ? c.cdc_color[i] : 'GREEN'] || cdcColorMap['GREEN'];
-    return { x: new Date(d+'-01').getTime(), o:c.open[i], h:c.high[i], l:c.low[i], c:c.close[i], _color: col };
-  });
+  // CDC colors สำหรับแต่ละแท่ง
+  const colors = (c.cdc_color||[]).map(col=>cdcColor(col));
 
-  const ema12Data = c.dates.map((d,i) => ({ x: new Date(d+'-01').getTime(), y: c.ema12[i] }));
-  const ema26Data = c.dates.map((d,i) => ({ x: new Date(d+'-01').getTime(), y: c.ema26[i] }));
-  const buyPts  = (c.signals||[]).filter(s=>s.type==='BUY').map(s=>({ x: new Date(s.date+'-01').getTime(), y: s.price }));
-  const sellPts = (c.signals||[]).filter(s=>s.type==='SELL').map(s=>({ x: new Date(s.date+'-01').getTime(), y: s.price }));
+  // วาด Candlestick แยกตามสี CDC
+  const datasets = [];
 
-  if(priceChartInst) priceChartInst.destroy();
-  priceChartInst = new Chart(document.getElementById('price-chart'), {
-    type: 'candlestick',
-    data: {
-      datasets: [
-        { label:'OHLC', data:candleData,
-           color: { up:'#3fb950', down:'#f85149', unchanged:'#8b949e' },
-           borderColor: { up:'#3fb950', down:'#f85149', unchanged:'#8b949e' }, order:3 },
-        { label:'EMA12 🔴', type:'line', data:ema12Data, borderColor:'#f85149', borderWidth:1.5, pointRadius:0, tension:0.3, order:2 },
-        { label:'EMA26 🔵', type:'line', data:ema26Data, borderColor:'#58a6ff', borderWidth:1.5, pointRadius:0, tension:0.3, order:2 },
-        { label:'🟢 BUY', type:'scatter', data:buyPts, backgroundColor:'#3fb950', pointRadius:10, pointStyle:'triangle', order:1 },
-        { label:'🔴 SELL', type:'scatter', data:sellPts, backgroundColor:'#f85149', pointRadius:10, pointStyle:'triangle', rotation:180, order:1 }
-      ]
-    },
-    options: {
-      responsive:true, maintainAspectRatio:false,
-      plugins: { legend: { labels: { color:'#e6edf3', font:{size:11} } } },
-      scales: {
-        x: { type:'time', time:{ unit:'month', displayFormats:{ month:'MMM yy' } }, ticks:{ color:'#8b949e', maxTicksLimit:12 }, grid:{ color:'#21262d' } },
-        y: { ticks:{ color:'#8b949e' }, grid:{ color:'#21262d' } }
-      }
-    }
-  });
+  // กลุ่มสีต่างๆ
+  const colorGroups = {
+    'GREEN':  { color:'#3fb950', bars:[] },
+    'RED':    { color:'#f85149', bars:[] },
+    'YELLOW': { color:'#d0b023', bars:[] },
+    'ORANGE': { color:'#f87730', bars:[] }
+  };
 
-  if(macdChartInst) macdChartInst.destroy();
-  const macdDates = c.dates.map(d => new Date(d+'-01').getTime());
-  const histColors = c.hist.map(v => v>=0 ? 'rgba(63,185,80,0.8)' : 'rgba(248,81,73,0.8)');
-  macdChartInst = new Chart(document.getElementById('macd-chart'), {
-    type:'bar',
-    data: {
-      labels: macdDates,
-      datasets: [
-        { label:'Histogram', data:c.hist, backgroundColor:histColors, borderWidth:0, order:2 },
-        { label:'MACD 🔴', data:c.macd, type:'line', borderColor:'#f85149', borderWidth:1.5, pointRadius:0, tension:0.3, order:1 },
-        { label:'Signal 🔵', data:c.signal, type:'line', borderColor:'#58a6ff', borderWidth:1.5, pointRadius:0, tension:0.3, order:1 }
-      ]
-    },
-    options: {
-      responsive:true, maintainAspectRatio:false,
-      plugins: { legend: { labels: { color:'#e6edf3', font:{size:11} } } },
-      scales: {
-        x: { type:'time', time:{ unit:'month', displayFormats:{ month:'MMM yy' } }, ticks:{ color:'#8b949e', maxTicksLimit:12 }, grid:{ color:'#21262d' } },
-        y: { ticks:{ color:'#8b949e' }, grid:{ color:'#21262d' } }
-      }
-    }
-  });
-}
-
-function closeModal(e) { if(e.target.id==='modal-bg') closeModalDirect(); }
-function closeModalDirect() { document.getElementById('modal-bg').classList.remove('show'); }
-
-async function sendLine(symbol, signal, price, date, btn) {
-  btn.textContent='⏳...'; btn.disabled=true;
-  const emoji = signal==='BUY'?'⚠️':'🔴';
-  const label = signal==='BUY'?'Ready to Buy':'Ready to Sell';
-  const now = new Date().toLocaleString('th-TH',{timeZone:'Asia/Bangkok'});
-  try {
-    const res = await fetch(N8N_WEBHOOK, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({symbol, signal, price,
-        message:`${emoji} ${label} — ${symbol}\nราคา: ${price} บาท\nTimeframe: Monthly\nสัญญาณ: ${date}\nเวลา: ${now}`})
+  c.dates.forEach((d,i) => {
+    const col = (c.cdc_color && c.cdc_color[i]) || 'GREEN';
+    colorGroups[col].bars.push({
+      x: new Date(d+'-01').getTime(),
+      o: c.open[i], h: c.high[i], l: c.low[i], c: c.close[i]
     });
-    if(res.ok) { btn.classList.add('sent'); btn.textContent='✅ ส่งแล้ว'; showToast(`✅ ส่ง ${symbol} ไป LINE แล้ว!`); }
-    else throw new Error();
-  } catch { btn.textContent='📲 ส่ง LINE'; btn.disabled=false; showToast('❌ ส่งไม่ได้',true); }
+  });
+
+  Object.entries(colorGroups).forEach(([name, g]) => {
+    if(g.bars.length===0) return;
+    datasets.push({
+      label: name,
+      type: 'candlestick',
+      data: g.bars,
+      color: { up:g.color, down:g.color, unchanged:g.color },
+      borderColor: { up:g.color, down:g.color, unchanged:g.color },
+      order: 3
+    });
+  });
+
+  // EMA lines
+  datasets.push({ label:'EMA12 🔴', type:'line', data:c.dates.map((d,i)=>({x:new Date(d+'-01').getTime(),y:c.ema12[i]})), borderColor:'#f85149', borderWidth:1.5, pointRadius:0, tension:0.3, order:2 });
+  datasets.push({ label:'EMA26 🔵', type:'line', data:c.dates.map((d,i)=>({x:new Date(d+'-01').getTime(),y:c.ema26[i]})), borderColor:'#58a6ff', borderWidth:1.5, pointRadius:0, tension:0.3, order:2 });
+
+  // Signal points
+  const buyPts=(c.signals||[]).filter(s=>s.type==='BUY').map(s=>({x:new Date(s.date+'-01').getTime(),y:s.price}));
+  const sellPts=(c.signals||[]).filter(s=>s.type==='SELL').map(s=>({x:new Date(s.date+'-01').getTime(),y:s.price}));
+  if(buyPts.length)  datasets.push({label:'🟢 BUY', type:'scatter', data:buyPts, backgroundColor:'#3fb950', pointRadius:10, pointStyle:'triangle', order:1});
+  if(sellPts.length) datasets.push({label:'🔴 SELL', type:'scatter', data:sellPts, backgroundColor:'#f85149', pointRadius:10, pointStyle:'triangle', rotation:180, order:1});
+
+  if(priceChart) priceChart.destroy();
+  priceChart = new Chart(document.getElementById('price-chart'), {
+    type: 'candlestick',
+    data: { datasets },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins: { legend: { labels: { color:'#e6edf3', font:{size:10}, filter: (item) => ['EMA12 🔴','EMA26 🔵','🟢 BUY','🔴 SELL'].includes(item.text) } } },
+      scales: {
+        x: { type:'time', time:{unit:'month',displayFormats:{month:'MMM yy'}}, ticks:{color:'#8b949e',maxTicksLimit:12}, grid:{color:'#21262d'} },
+        y: { ticks:{color:'#8b949e'}, grid:{color:'#21262d'} }
+      }
+    }
+  });
+
+  if(macdChart) macdChart.destroy();
+  const histColors=c.hist.map(v=>v>=0?'rgba(63,185,80,0.8)':'rgba(248,81,73,0.8)');
+  macdChart = new Chart(document.getElementById('macd-chart'), {
+    type:'bar',
+    data:{
+      labels:c.dates.map(d=>new Date(d+'-01').getTime()),
+      datasets:[
+        {label:'Histogram',data:c.hist,backgroundColor:histColors,borderWidth:0,order:2},
+        {label:'MACD 🔴',data:c.macd,type:'line',borderColor:'#f85149',borderWidth:1.5,pointRadius:0,tension:0.3,order:1},
+        {label:'Signal 🔵',data:c.signal,type:'line',borderColor:'#58a6ff',borderWidth:1.5,pointRadius:0,tension:0.3,order:1}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#e6edf3',font:{size:11}}}},
+      scales:{
+        x:{type:'time',time:{unit:'month',displayFormats:{month:'MMM yy'}},ticks:{color:'#8b949e',maxTicksLimit:12},grid:{color:'#21262d'}},
+        y:{ticks:{color:'#8b949e'},grid:{color:'#21262d'}}
+      }
+    }
+  });
 }
 
-function showToast(msg, isError=false) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show' + (isError?' error':'');
-  setTimeout(()=>t.className='toast', 3000);
+function closeModal() { document.getElementById('modal-bg').classList.remove('show'); }
+
+async function sendLine(symbol,signal,price,date,btn) {
+  btn.textContent='⏳...'; btn.disabled=true;
+  const emoji=signal==='BUY'?'⚠️':'🔴';
+  const label=signal==='BUY'?'Ready to Buy':'Ready to Sell';
+  const now=new Date().toLocaleString('th-TH',{timeZone:'Asia/Bangkok'});
+  try {
+    const res=await fetch(N8N_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({symbol,signal,price,message:`${emoji} ${label} — ${symbol}\nราคา: ${price} บาท\nTimeframe: Monthly\nสัญญาณ: ${date}\nเวลา: ${now}`})});
+    if(res.ok){btn.classList.add('sent');btn.textContent='✅ ส่งแล้ว';showToast(`✅ ส่ง ${symbol} ไป LINE!`);}
+    else throw new Error();
+  } catch {btn.textContent='📲 ส่ง LINE';btn.disabled=false;showToast('❌ ส่งไม่ได้',true);}
+}
+
+function showToast(msg,isError=false) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show'+(isError?' error':'');
+  setTimeout(()=>t.className='toast',3000);
 }
 
 loadData();
-setInterval(loadData, 60000);
+setInterval(loadData,60000);
 </script>
 </body>
 </html>
