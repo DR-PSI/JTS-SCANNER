@@ -22,7 +22,7 @@ jobs:
         run: pip install yfinance pandas requests
 
       - name: Run scanner
-        run: python python scanner.py
+        run: python scanner.py
 
       - name: Commit scanner-data.json
         run: |
