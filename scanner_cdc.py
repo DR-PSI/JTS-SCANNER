@@ -1,20 +1,19 @@
 """
-JTS MACD + CDC Scanner v11.0 (CDC Color Edition)
+JTS MACD + CDC Scanner Daily v1.0
 - สแกน SET+MAI ~300 ตัว
-- บันทึก OHLC + EMA12/26 + MACD + CDC Color
-- CDC Color = Candlestick Color ตามหลักการลุงโฉลก
+- Timeframe: 1d (รายวัน)
+- ย้อนหลัง 6 เดือน (180 วัน)
+- อัปเดตทุกวัน 12:00 น.
 """
 
 import yfinance as yf
-import requests
 import json
 from datetime import datetime, timezone, timedelta
 
-WEBHOOK_URL  = "https://n8n.jupetor-cmms.com/webhook/tradingview-jts"
-TIMEFRAME    = "1mo"
-PERIOD       = "10y"
-CHART_MONTHS = 60
-THAI_TZ      = timezone(timedelta(hours=7))
+TIMEFRAME   = "1d"
+PERIOD      = "6mo"
+CHART_DAYS  = 180
+THAI_TZ     = timezone(timedelta(hours=7))
 
 SET100 = [
     "PTT.BK","PTTEP.BK","PTTGC.BK","TOP.BK","IRPC.BK","BCP.BK",
@@ -71,14 +70,14 @@ def calc_macd(close):
 def get_cdc_color(ema12_val, ema26_val, open_val, close_val):
     """
     CDC Color Logic - ตามหลักการลุงโฉลก
-    🟢 GREEN   = EMA12 > EMA26 AND Close > Open (Strong Bullish)
-    🔴 RED     = EMA12 < EMA26 AND Close < Open (Strong Bearish)
-    🟡 YELLOW  = EMA12 > EMA26 BUT Close < Open (Bearish candle)
-    🟠 ORANGE  = EMA12 < EMA26 BUT Close > Open (Bullish candle)
+    🟢 GREEN   = EMA12 > EMA26 AND Close > Open
+    🔴 RED     = EMA12 < EMA26 AND Close < Open
+    🟡 YELLOW  = EMA12 > EMA26 BUT Close < Open
+    🟠 ORANGE  = EMA12 < EMA26 BUT Close > Open
     """
-    is_bullish_ema = ema12_val > ema26_val
+    is_bullish_ema    = ema12_val > ema26_val
     is_bullish_candle = close_val > open_val
-    
+
     if is_bullish_ema and is_bullish_candle:
         return "GREEN"
     elif not is_bullish_ema and not is_bullish_candle:
@@ -88,9 +87,10 @@ def get_cdc_color(ema12_val, ema26_val, open_val, close_val):
     else:
         return "ORANGE"
 
-def scan(df):
+def scan_daily(df):
     close = df["Close"].squeeze()
     open_p = df["Open"].squeeze()
+
     if len(close) < 30:
         return None, None, None, {}
 
@@ -114,7 +114,7 @@ def scan(df):
         if zone_bear and cross_up and pink_to_green:
             position = "BUY"; last_date = df.index[i]
             signal_points.append({
-                "date":  df.index[i].strftime("%Y-%m"),
+                "date":  df.index[i].strftime("%Y-%m-%d"),
                 "type":  "BUY",
                 "price": round(float(df["Close"].iloc[i].item()), 2)
             })
@@ -123,14 +123,14 @@ def scan(df):
         elif zone_bull and cross_down and light_to_red:
             position = "SELL"; last_date = df.index[i]
             signal_points.append({
-                "date":  df.index[i].strftime("%Y-%m"),
+                "date":  df.index[i].strftime("%Y-%m-%d"),
                 "type":  "SELL",
                 "price": round(float(df["Close"].iloc[i].item()), 2)
             })
             if i == bars - 1: new_signal = "SELL"
 
-    # เก็บ 60 เดือนล่าสุด + CDC Color
-    df_chart = df.tail(CHART_MONTHS)
+    # เก็บ 180 วันล่าสุด + CDC Color
+    df_chart = df.tail(CHART_DAYS)
     close_c  = df_chart["Close"].squeeze()
     open_c   = df_chart["Open"].squeeze()
     high_c   = df_chart["High"].squeeze()
@@ -139,7 +139,7 @@ def scan(df):
     e12 = ema(close_c, 12)
     e26 = ema(close_c, 26)
 
-    # คำนวณ CDC Color สำหรับแต่ละแท่งเทียน
+    # CDC Color
     cdc_colors = []
     for j in range(len(df_chart)):
         color = get_cdc_color(
@@ -151,57 +151,37 @@ def scan(df):
         cdc_colors.append(color)
 
     chart = {
-        "dates":   [d.strftime("%Y-%m") for d in df_chart.index],
-        "open":    [round(float(v), 2) for v in open_c],
-        "high":    [round(float(v), 2) for v in high_c],
-        "low":     [round(float(v), 2) for v in low_c],
-        "close":   [round(float(v), 2) for v in close_c],
-        "ema12":   [round(float(v), 2) for v in e12],
-        "ema26":   [round(float(v), 2) for v in e26],
-        "macd":    [round(float(v), 4) for v in ml],
-        "signal":  [round(float(v), 4) for v in sl],
-        "hist":    [round(float(v), 4) for v in hl],
-        "cdc_color": cdc_colors,  # ✅ สีแท่งเทียน CDC
-        "signals": [s for s in signal_points if s["date"] >= df_chart.index[0].strftime("%Y-%m")]
+        "dates":     [d.strftime("%Y-%m-%d") for d in df_chart.index],
+        "open":      [round(float(v), 2) for v in open_c],
+        "high":      [round(float(v), 2) for v in high_c],
+        "low":       [round(float(v), 2) for v in low_c],
+        "close":     [round(float(v), 2) for v in close_c],
+        "ema12":     [round(float(v), 2) for v in e12],
+        "ema26":     [round(float(v), 2) for v in e26],
+        "macd":      [round(float(v), 4) for v in ml],
+        "signal":    [round(float(v), 4) for v in sl],
+        "hist":      [round(float(v), 4) for v in hl],
+        "cdc_color": cdc_colors,
+        "signals":   [s for s in signal_points
+                      if s["date"] >= df_chart.index[0].strftime("%Y-%m-%d")]
     }
 
     return position, last_date, new_signal, chart
 
-def send_line(symbol, signal, price, last_date):
-    name     = symbol.replace(".BK", "")
-    emoji    = "⚠️" if signal == "BUY" else "🔴"
-    label    = "Ready to Buy" if signal == "BUY" else "Ready to Sell"
-    now_thai = datetime.now(THAI_TZ).strftime('%d/%m/%Y %H:%M')
-    payload  = {
-        "symbol": name, "signal": signal, "price": round(price, 2),
-        "message": (
-            f"{emoji} {label} — {name}\n"
-            f"ราคา: {round(price, 2)} บาท\n"
-            f"Timeframe: Monthly\n"
-            f"สัญญาณ: {last_date.strftime('%m/%Y') if last_date else '-'}\n"
-            f"เวลา: {now_thai}"
-        ),
-        "time": datetime.now(THAI_TZ).strftime("%Y-%m-%d %H:%M:%S")
-    }
-    try:
-        r = requests.post(WEBHOOK_URL, json=payload, timeout=10)
-        print(f"    → LINE: {r.status_code}")
-    except Exception as e:
-        print(f"    → LINE error: {e}")
-
 def save_json(results):
     data = {
-        "updated": datetime.now(THAI_TZ).strftime('%d/%m/%Y %H:%M'),
-        "stocks":  results
+        "updated":   datetime.now(THAI_TZ).strftime('%d/%m/%Y %H:%M'),
+        "timeframe": "Daily",
+        "stocks":    results
     }
-    with open("scanner-data.json", "w", encoding="utf-8") as f:
+    with open("scanner-data-day.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-    print(f"\n  → บันทึก scanner-data.json ({len(results)} ตัว)")
+    print(f"\n  → บันทึก scanner-data-day.json ({len(results)} ตัว)")
 
 def main():
     now_thai = datetime.now(THAI_TZ).strftime('%d/%m/%Y %H:%M:%S')
     print(f"\n{'='*60}")
-    print(f"  JTS MACD + CDC Scanner v11.0 — Monthly ({len(STOCKS)} หุ้น)")
+    print(f"  JTS Daily Scanner v1.0 — Daily ({len(STOCKS)} หุ้น)")
     print(f"  CDC Color Edition (ลุงโฉลก)")
     print(f"  {now_thai}")
     print(f"{'='*60}\n")
@@ -216,10 +196,10 @@ def main():
             if df.empty or len(df) < 30:
                 print("⚠️  ข้อมูลน้อย"); continue
 
-            position, last_date, new_signal, chart = scan(df)
+            position, last_date, new_signal, chart = scan_daily(df)
             price    = float(df["Close"].iloc[-1].item())
             icon     = "🟢" if position == "BUY" else "🔴" if position == "SELL" else "⬜"
-            date_str = last_date.strftime("%m/%Y") if last_date else "-"
+            date_str = last_date.strftime("%d/%m/%Y") if last_date else "-"
             new      = " ← ใหม่!" if new_signal else ""
 
             print(f"{icon} {str(position):<5} (ล่าสุด: {date_str}){new}")
@@ -232,9 +212,6 @@ def main():
                 "new":      bool(new_signal),
                 "chart":    chart
             })
-
-            if position in ("BUY", "SELL"):
-                send_line(symbol, position, price, last_date)
 
         except Exception as e:
             print(f"❌ {e}")
