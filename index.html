@@ -22,12 +22,12 @@ body { font-family:'Segoe UI',sans-serif; background:#0d1117; color:#e6edf3; min
 .stat-card.sell .value { color:#f85149; }
 .stat-card.total .value { color:#58a6ff; }
 .filters { padding:0 24px 16px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-.btn { padding:6px 16px; border-radius:6px; border:1px solid #30363d; background:#21262d; color:#e6edf3; cursor:pointer; font-size:13px; transition:all 0.2s; }
+.btn { padding:6px 16px; border-radius:6px; border:1px solid #30363d; background:#21262d; color:#e6edf3; cursor:pointer; font-size:13px; }
 .btn.active { background:#1f6feb; border-color:#1f6feb; color:white; }
 .btn.buy-btn.active { background:#238636; border-color:#238636; }
 .btn.sell-btn.active { background:#da3633; border-color:#da3633; }
 .tf-group { display:flex; gap:4px; margin-left:auto; background:#161b22; border:1px solid #30363d; border-radius:6px; padding:3px; }
-.tf-btn { padding:4px 14px; border-radius:4px; border:none; background:transparent; color:#8b949e; cursor:pointer; font-size:13px; font-weight:600; transition:all 0.2s; }
+.tf-btn { padding:4px 14px; border-radius:4px; border:none; background:transparent; color:#8b949e; cursor:pointer; font-size:13px; font-weight:600; }
 .tf-btn.active { background:#1f6feb; color:white; }
 .table-wrap { padding:0 24px 24px; overflow-x:auto; }
 table { width:100%; border-collapse:collapse; font-size:14px; }
@@ -38,11 +38,8 @@ tr:hover td { background:#161b22; }
 .badge.buy { background:#0d4a1e; color:#3fb950; border:1px solid #238636; }
 .badge.sell { background:#4a0d0d; color:#f85149; border:1px solid #da3633; }
 .symbol { font-weight:600; color:#58a6ff; cursor:pointer; }
-.symbol:hover { text-decoration:underline; }
 .chart-btn { padding:4px 10px; border-radius:6px; border:1px solid #30363d; background:#21262d; color:#8b949e; cursor:pointer; font-size:12px; }
-.chart-btn:hover { border-color:#58a6ff; color:#58a6ff; }
 .line-btn { padding:4px 10px; border-radius:6px; border:1px solid #238636; background:#0d4a1e; color:#3fb950; cursor:pointer; font-size:12px; }
-.line-btn:hover { background:#238636; color:white; }
 .line-btn.sent { border-color:#58a6ff; background:#1f3a5c; color:#58a6ff; }
 .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:100; align-items:center; justify-content:center; padding:16px; }
 .modal-bg.show { display:flex; }
@@ -62,9 +59,6 @@ tr:hover td { background:#161b22; }
 .toast { position:fixed; bottom:24px; right:24px; background:#238636; color:white; padding:12px 20px; border-radius:8px; font-size:14px; opacity:0; transition:opacity 0.3s; pointer-events:none; z-index:999; }
 .toast.show { opacity:1; }
 .toast.error { background:#da3633; }
-.tf-badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:600; margin-left:6px; }
-.tf-badge.monthly { background:#1f3a5c; color:#58a6ff; }
-.tf-badge.daily { background:#1a3a1a; color:#3fb950; }
 @media(max-width:600px) { .stats{flex-direction:column;} .header h1{font-size:16px;} }
 </style>
 </head>
@@ -94,10 +88,9 @@ tr:hover td { background:#161b22; }
   <button class="btn active" onclick="filterData('ALL',this)">ทั้งหมด</button>
   <button class="btn buy-btn" onclick="filterData('BUY',this)">Ready to Buy</button>
   <button class="btn sell-btn" onclick="filterData('SELL',this)">Ready to Sell</button>
-
   <div class="tf-group">
-    <button class="tf-btn active" id="tf-monthly" onclick="switchTimeframe('monthly',this)">📅 Monthly</button>
-    <button class="tf-btn" id="tf-daily" onclick="switchTimeframe('daily',this)">📊 Daily</button>
+    <button class="tf-btn active" onclick="switchTf('monthly',this)">📅 Monthly</button>
+    <button class="tf-btn" onclick="switchTf('daily',this)">📊 Daily</button>
   </div>
 </div>
 
@@ -116,8 +109,8 @@ tr:hover td { background:#161b22; }
     <div class="modal-header">
       <span class="modal-title" id="modal-title">กราฟ</span>
       <div class="modal-tf">
-        <button class="modal-tf-btn active" id="modal-tf-monthly" onclick="switchModalTf('monthly',this)">📅 Monthly</button>
-        <button class="modal-tf-btn" id="modal-tf-daily" onclick="switchModalTf('daily',this)">📊 Daily</button>
+        <button class="modal-tf-btn active" id="mtf-monthly" onclick="switchModalTf('monthly',this)">📅 Monthly</button>
+        <button class="modal-tf-btn" id="mtf-daily" onclick="switchModalTf('daily',this)">📊 Daily</button>
       </div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
@@ -129,7 +122,7 @@ tr:hover td { background:#161b22; }
         🟡 YELLOW = EMA12 &gt; EMA26 + Close &lt; Open &nbsp;|&nbsp;
         🟠 ORANGE = EMA12 &lt; EMA26 + Close &gt; Open
       </div>
-      <div class="chart-label">🕯️ Candlestick + EMA12 🔴 + EMA26 🔵 + Signal</div>
+      <div class="chart-label" id="chart-label-price">🕯️ Candlestick + EMA12 🔴 + EMA26 🔵 + Signal</div>
       <div class="chart-container"><canvas id="price-chart"></canvas></div>
       <div class="chart-label">📊 MACD Histogram + Signal Line</div>
       <div class="chart-container"><canvas id="macd-chart"></canvas></div>
@@ -141,67 +134,76 @@ tr:hover td { background:#161b22; }
 
 <script>
 const N8N_WEBHOOK = 'https://n8n.jupetor-cmms.com/webhook/24b8ea71-daa0-48c1-ac83-c1b79ae2c1a4';
-let allData = [], currentFilter = 'ALL', currentTf = 'monthly';
-let priceChart = null, macdChart = null;
-let currentSymbol = null, currentModalTf = 'monthly';
+let allData = [];
+let currentFilter = 'ALL';
+let currentTf = 'monthly';
+let currentSymbol = null;
+let currentModalTf = 'monthly';
+let priceChart = null;
+let macdChart = null;
+let monthlyData = null;
+let dailyData = null;
 
 function cdcColor(col) {
-  if(col==='GREEN')  return '#3fb950';
-  if(col==='RED')    return '#f85149';
-  if(col==='YELLOW') return '#d0b023';
-  if(col==='ORANGE') return '#f87730';
+  if(col === 'GREEN')  return '#3fb950';
+  if(col === 'RED')    return '#f85149';
+  if(col === 'YELLOW') return '#d0b023';
+  if(col === 'ORANGE') return '#f87730';
   return '#8b949e';
+}
+
+async function fetchJSON(file) {
+  const res = await fetch(file + '?t=' + Date.now());
+  return await res.json();
 }
 
 async function loadData() {
   document.getElementById('loading').style.display = 'block';
   document.getElementById('main-table').style.display = 'none';
-  const file = currentTf === 'monthly' ? 'scanner-data.json' : 'scanner-data-day.json';
   try {
-    const res = await fetch(file + '?t=' + Date.now());
-    const data = await res.json();
+    const file = currentTf === 'monthly' ? 'scanner-data.json' : 'scanner-data-day.json';
+    const data = await fetchJSON(file);
     allData = data.stocks || [];
-    const tf = currentTf === 'monthly' ? '📅 Monthly' : '📊 Daily';
-    document.getElementById('last-update').textContent = tf + ' | อัปเดต: ' + (data.updated || '-');
+    if(currentTf === 'monthly') monthlyData = data;
+    else dailyData = data;
+    const tfLabel = currentTf === 'monthly' ? '📅 Monthly' : '📊 Daily';
+    document.getElementById('last-update').textContent = tfLabel + ' | อัปเดต: ' + (data.updated || '-');
     document.getElementById('total-count').textContent = allData.length;
-    document.getElementById('buy-count').textContent = allData.filter(r=>r.position==='BUY').length;
-    document.getElementById('sell-count').textContent = allData.filter(r=>r.position==='SELL').length;
+    document.getElementById('buy-count').textContent = allData.filter(r => r.position === 'BUY').length;
+    document.getElementById('sell-count').textContent = allData.filter(r => r.position === 'SELL').length;
     renderTable(currentFilter);
   } catch(e) {
-    document.getElementById('loading').innerHTML = '❌ ไม่พบข้อมูล (' + (currentTf==='monthly'?'scanner-data.json':'scanner-data-day.json') + ')';
+    document.getElementById('loading').innerHTML = '❌ ไม่พบข้อมูล';
   }
 }
 
-function switchTimeframe(tf, btn) {
+function switchTf(tf, btn) {
   currentTf = tf;
-  document.querySelectorAll('.tf-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   loadData();
 }
 
 function filterData(f, btn) {
   currentFilter = f;
-  document.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderTable(f);
 }
 
 function renderTable(f) {
-  let rows = allData.filter(r=>r.position!=='NONE');
-  if(f==='BUY')  rows = rows.filter(r=>r.position==='BUY');
-  if(f==='SELL') rows = rows.filter(r=>r.position==='SELL');
-  rows.sort((a,b) => {
-    if(a.new&&!b.new) return -1;
-    if(!a.new&&b.new) return 1;
+  let rows = allData.filter(r => r.position !== 'NONE');
+  if(f === 'BUY')  rows = rows.filter(r => r.position === 'BUY');
+  if(f === 'SELL') rows = rows.filter(r => r.position === 'SELL');
+  rows.sort((a, b) => {
+    if(a.new && !b.new) return -1;
+    if(!a.new && b.new) return 1;
     return b.date.localeCompare(a.date);
   });
-  const tfBadge = currentTf === 'monthly'
-    ? '<span class="tf-badge monthly">Monthly</span>'
-    : '<span class="tf-badge daily">Daily</span>';
-  document.getElementById('table-body').innerHTML = rows.map((r,i) => `
+  document.getElementById('table-body').innerHTML = rows.map((r, i) => `
     <tr>
       <td style="color:#8b949e">${i+1}</td>
-      <td class="symbol" onclick="showChart('${r.symbol}')">${r.symbol} 🕯️ ${tfBadge}</td>
+      <td class="symbol" onclick="showChart('${r.symbol}')">${r.symbol} 🕯️</td>
       <td><span class="badge ${r.position.toLowerCase()}">${r.position==='BUY'?'⚠️ Ready to Buy':'🔴 Ready to Sell'}</span></td>
       <td style="font-weight:500">${r.price.toLocaleString('th-TH',{minimumFractionDigits:2})}</td>
       <td style="color:#8b949e;font-size:13px">${r.date}</td>
@@ -217,118 +219,117 @@ function renderTable(f) {
 function showChart(symbol) {
   currentSymbol = symbol;
   currentModalTf = currentTf;
-  document.getElementById('modal-tf-monthly').classList.toggle('active', currentModalTf === 'monthly');
-  document.getElementById('modal-tf-daily').classList.toggle('active', currentModalTf === 'daily');
-  renderChart(symbol, currentModalTf);
+  document.getElementById('mtf-monthly').classList.toggle('active', currentModalTf === 'monthly');
+  document.getElementById('mtf-daily').classList.toggle('active', currentModalTf === 'daily');
   document.getElementById('modal-bg').classList.add('show');
+  renderChart(symbol, currentModalTf);
 }
 
-function switchModalTf(tf, btn) {
+async function switchModalTf(tf, btn) {
   currentModalTf = tf;
-  document.querySelectorAll('.modal-tf-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.modal-tf-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  if(currentSymbol) renderChart(currentSymbol, tf);
+  if(currentSymbol) await renderChart(currentSymbol, tf);
 }
 
 async function renderChart(symbol, tf) {
-  // โหลดข้อมูลจาก JSON ที่ตรงกับ tf
-  let stockData = null;
-  if(tf === currentTf) {
-    stockData = allData.find(r=>r.symbol===symbol);
+  let stock = null;
+
+  if(tf === 'monthly') {
+    if(!monthlyData) {
+      try { monthlyData = await fetchJSON('scanner-data.json'); } catch(e) {}
+    }
+    stock = (monthlyData && monthlyData.stocks || []).find(r => r.symbol === symbol);
   } else {
-    const file = tf === 'monthly' ? 'scanner-data.json' : 'scanner-data-day.json';
-    try {
-      const res = await fetch(file + '?t=' + Date.now());
-      const data = await res.json();
-      stockData = (data.stocks||[]).find(r=>r.symbol===symbol);
-    } catch(e) { stockData = null; }
+    if(!dailyData) {
+      try { dailyData = await fetchJSON('scanner-data-day.json'); } catch(e) {}
+    }
+    stock = (dailyData && dailyData.stocks || []).find(r => r.symbol === symbol);
   }
 
-  if(!stockData || !stockData.chart) {
-    document.getElementById('modal-title').textContent = `${symbol} — ไม่พบข้อมูล ${tf}`;
+  if(!stock || !stock.chart) {
+    document.getElementById('modal-title').textContent = symbol + ' — ไม่พบข้อมูล ' + tf;
     return;
   }
 
-  const c = stockData.chart;
-  const tfLabel = tf === 'monthly' ? '📅 Monthly' : '📊 Daily (6 เดือน)';
+  const c = stock.chart;
+  const tfLabel = tf === 'monthly' ? '📅 Monthly (60 เดือน)' : '📊 Daily (6 เดือน)';
   document.getElementById('modal-title').textContent =
-    `🎨 ${symbol} — ${stockData.position==='BUY'?'⚠️ Ready to Buy':'🔴 Ready to Sell'} — ${tfLabel}`;
+    '🎨 ' + symbol + ' — ' + (stock.position === 'BUY' ? '⚠️ Ready to Buy' : '🔴 Ready to Sell') + ' — ' + tfLabel;
 
-  // Parse dates
-  const parseDate = (d) => tf === 'monthly'
-    ? new Date(d + '-01').getTime()
-    : new Date(d).getTime();
-
+  // กำหนด time unit และ format ตาม timeframe
   const timeUnit = tf === 'monthly' ? 'month' : 'day';
-  const displayFormat = tf === 'monthly' ? { month:'MMM yy' } : { day:'d MMM yy' };
+  const timeFmt  = tf === 'monthly' ? { month: 'MMM yy' } : { day: 'd MMM yy' };
 
-  const colors = (c.cdc_color||[]).map(col => cdcColor(col));
+  // parse date ตาม format
+  function parseDate(d) {
+    if(tf === 'monthly') return new Date(d + '-01').getTime();
+    return new Date(d).getTime();
+  }
 
   // CDC Color groups
-  const colorGroups = {
-    'GREEN':  { color:'#3fb950', bars:[] },
-    'RED':    { color:'#f85149', bars:[] },
-    'YELLOW': { color:'#d0b023', bars:[] },
-    'ORANGE': { color:'#f87730', bars:[] }
+  const groups = {
+    GREEN:  { color:'#3fb950', bars:[] },
+    RED:    { color:'#f85149', bars:[] },
+    YELLOW: { color:'#d0b023', bars:[] },
+    ORANGE: { color:'#f87730', bars:[] }
   };
-  c.dates.forEach((d,i) => {
+  c.dates.forEach((d, i) => {
     const col = (c.cdc_color && c.cdc_color[i]) || 'GREEN';
-    colorGroups[col].bars.push({
-      x: parseDate(d), o:c.open[i], h:c.high[i], l:c.low[i], c:c.close[i]
-    });
+    if(groups[col]) groups[col].bars.push({ x:parseDate(d), o:c.open[i], h:c.high[i], l:c.low[i], c:c.close[i] });
   });
 
   const datasets = [];
-  Object.entries(colorGroups).forEach(([name, g]) => {
-    if(g.bars.length===0) return;
+  Object.entries(groups).forEach(([name, g]) => {
+    if(!g.bars.length) return;
     datasets.push({
-      label: name, type:'candlestick', data: g.bars,
+      label: name, type: 'candlestick', data: g.bars,
       color: { up:g.color, down:g.color, unchanged:g.color },
       borderColor: { up:g.color, down:g.color, unchanged:g.color },
       order: 3
     });
   });
 
-  datasets.push({ label:'EMA12 🔴', type:'line', data:c.dates.map((d,i)=>({x:parseDate(d),y:c.ema12[i]})), borderColor:'#f85149', borderWidth:1.5, pointRadius:0, tension:0.3, order:2 });
-  datasets.push({ label:'EMA26 🔵', type:'line', data:c.dates.map((d,i)=>({x:parseDate(d),y:c.ema26[i]})), borderColor:'#58a6ff', borderWidth:1.5, pointRadius:0, tension:0.3, order:2 });
+  datasets.push({ label:'EMA12 🔴', type:'line', data:c.dates.map((d,i)=>({{'x':parseDate(d),'y':c.ema12[i]}})), borderColor:'#f85149', borderWidth:1.5, pointRadius:0, tension:0.3, order:2 });
+  datasets.push({ label:'EMA26 🔵', type:'line', data:c.dates.map((d,i)=>({{'x':parseDate(d),'y':c.ema26[i]}})), borderColor:'#58a6ff', borderWidth:1.5, pointRadius:0, tension:0.3, order:2 });
 
   const buyPts  = (c.signals||[]).filter(s=>s.type==='BUY').map(s=>({x:parseDate(s.date),y:s.price}));
   const sellPts = (c.signals||[]).filter(s=>s.type==='SELL').map(s=>({x:parseDate(s.date),y:s.price}));
-  if(buyPts.length)  datasets.push({label:'🟢 BUY', type:'scatter', data:buyPts, backgroundColor:'#3fb950', pointRadius:10, pointStyle:'triangle', order:1});
+  if(buyPts.length)  datasets.push({label:'🟢 BUY',  type:'scatter', data:buyPts,  backgroundColor:'#3fb950', pointRadius:10, pointStyle:'triangle', order:1});
   if(sellPts.length) datasets.push({label:'🔴 SELL', type:'scatter', data:sellPts, backgroundColor:'#f85149', pointRadius:10, pointStyle:'triangle', rotation:180, order:1});
 
   if(priceChart) priceChart.destroy();
   priceChart = new Chart(document.getElementById('price-chart'), {
-    type:'candlestick', data:{ datasets },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ labels:{ color:'#e6edf3', font:{size:10},
-        filter:(item)=>['EMA12 🔴','EMA26 🔵','🟢 BUY','🔴 SELL'].includes(item.text) } } },
-      scales:{
-        x:{ type:'time', time:{ unit:timeUnit, displayFormats }, ticks:{ color:'#8b949e', maxTicksLimit:12 }, grid:{ color:'#21262d' } },
-        y:{ ticks:{ color:'#8b949e' }, grid:{ color:'#21262d' } }
+    type: 'candlestick',
+    data: { datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color:'#e6edf3', font:{size:10}, filter:(item)=>['EMA12 🔴','EMA26 🔵','🟢 BUY','🔴 SELL'].includes(item.text) } } },
+      scales: {
+        x: { type:'time', time:{ unit:timeUnit, displayFormats:timeFmt }, ticks:{ color:'#8b949e', maxTicksLimit:12 }, grid:{ color:'#21262d' } },
+        y: { ticks:{ color:'#8b949e' }, grid:{ color:'#21262d' } }
       }
     }
   });
 
   if(macdChart) macdChart.destroy();
-  const histColors = c.hist.map(v=>v>=0?'rgba(63,185,80,0.8)':'rgba(248,81,73,0.8)');
+  const histColors = c.hist.map(v => v >= 0 ? 'rgba(63,185,80,0.8)' : 'rgba(248,81,73,0.8)');
   macdChart = new Chart(document.getElementById('macd-chart'), {
-    type:'bar',
-    data:{
-      labels: c.dates.map(d=>parseDate(d)),
-      datasets:[
-        {label:'Histogram', data:c.hist, backgroundColor:histColors, borderWidth:0, order:2},
-        {label:'MACD 🔴', data:c.macd, type:'line', borderColor:'#f85149', borderWidth:1.5, pointRadius:0, tension:0.3, order:1},
-        {label:'Signal 🔵', data:c.signal, type:'line', borderColor:'#58a6ff', borderWidth:1.5, pointRadius:0, tension:0.3, order:1}
+    type: 'bar',
+    data: {
+      labels: c.dates.map(d => parseDate(d)),
+      datasets: [
+        { label:'Histogram', data:c.hist, backgroundColor:histColors, borderWidth:0, order:2 },
+        { label:'MACD 🔴', data:c.macd, type:'line', borderColor:'#f85149', borderWidth:1.5, pointRadius:0, tension:0.3, order:1 },
+        { label:'Signal 🔵', data:c.signal, type:'line', borderColor:'#58a6ff', borderWidth:1.5, pointRadius:0, tension:0.3, order:1 }
       ]
     },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ labels:{ color:'#e6edf3', font:{size:11} } } },
-      scales:{
-        x:{ type:'time', time:{ unit:timeUnit, displayFormats }, ticks:{ color:'#8b949e', maxTicksLimit:12 }, grid:{ color:'#21262d' } },
-        y:{ ticks:{ color:'#8b949e' }, grid:{ color:'#21262d' } }
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color:'#e6edf3', font:{size:11} } } },
+      scales: {
+        x: { type:'time', time:{ unit:timeUnit, displayFormats:timeFmt }, ticks:{ color:'#8b949e', maxTicksLimit:12 }, grid:{ color:'#21262d' } },
+        y: { ticks:{ color:'#8b949e' }, grid:{ color:'#21262d' } }
       }
     }
   });
@@ -337,26 +338,28 @@ async function renderChart(symbol, tf) {
 function closeModal() { document.getElementById('modal-bg').classList.remove('show'); }
 
 async function sendLine(symbol, signal, price, date, btn) {
-  btn.textContent='⏳...'; btn.disabled=true;
-  const emoji = signal==='BUY'?'⚠️':'🔴';
-  const label = signal==='BUY'?'Ready to Buy':'Ready to Sell';
+  btn.textContent = '⏳...'; btn.disabled = true;
+  const emoji = signal === 'BUY' ? '⚠️' : '🔴';
+  const label = signal === 'BUY' ? 'Ready to Buy' : 'Ready to Sell';
   const tf = currentTf === 'monthly' ? 'Monthly' : 'Daily';
-  const now = new Date().toLocaleString('th-TH',{timeZone:'Asia/Bangkok'});
+  const now = new Date().toLocaleString('th-TH', {timeZone:'Asia/Bangkok'});
   try {
     const res = await fetch(N8N_WEBHOOK, {
-      method:'POST', headers:{'Content-Type':'application/json'},
+      method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({symbol, signal, price, date,
-        message:`${emoji} ${label} — ${symbol}\nราคา: ${price} บาท\nTimeframe: ${tf}\nสัญญาณ: ${date}\nเวลา: ${now}`})
+        message: emoji+' '+label+' — '+symbol+'\nราคา: '+price+' บาท\nTimeframe: '+tf+'\nสัญญาณ: '+date+'\nเวลา: '+now
+      })
     });
-    if(res.ok) { btn.classList.add('sent'); btn.textContent='✅ ส่งแล้ว'; showToast(`✅ ส่ง ${symbol} ไป LINE!`); }
+    if(res.ok) { btn.classList.add('sent'); btn.textContent = '✅ ส่งแล้ว'; showToast('✅ ส่ง '+symbol+' ไป LINE!'); }
     else throw new Error();
-  } catch { btn.textContent='📲 ส่ง LINE'; btn.disabled=false; showToast('❌ ส่งไม่ได้',true); }
+  } catch { btn.textContent = '📲 ส่ง LINE'; btn.disabled = false; showToast('❌ ส่งไม่ได้', true); }
 }
 
-function showToast(msg,isError=false) {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className='toast show'+(isError?' error':'');
-  setTimeout(()=>t.className='toast',3000);
+function showToast(msg, isError=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3000);
 }
 
 loadData();
